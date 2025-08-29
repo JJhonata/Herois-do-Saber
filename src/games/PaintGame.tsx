@@ -270,5 +270,3 @@ export default function PaintGame() {
     </div>
   )
 }
-
-

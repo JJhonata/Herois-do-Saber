@@ -33,8 +33,3 @@ export function getTotalStars() {
 }
 
 export type { GameId }
-
-
-
-
-

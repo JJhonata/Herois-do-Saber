@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { playBonus, playCorrect } from '../lib/sfx'
+import { playCorrect } from '../lib/sfx'
 import { addStars } from '../lib/progress'
 
 type Level = 'facil' | 'medio' | 'dificil'
@@ -10,32 +10,64 @@ const BANK: Record<Level, string[]> = {
     'A escola é legal.',
     'Ler é divertido.',
     'Eu amo matemática.',
-    'Eu gosto de brincar.',
-    'A escola tem muitos livros.',
-    'Os amigos ajudam a gente.',
-    'O sol brilha no céu.',
-    'Eu adoro pintar.',
+    'Gosto de escrever histórias.',
+    'A professora é muito gentil.',
+    'Eu ajudo meus amigos.',
+    'Brincar no recreio é bom.',
+    'Hoje fiz a lição de casa.',
+    'Eu cuido do meu material.',
+    'Beber água faz bem.',
+    'Dormir cedo ajuda a aprender.',
+    'Eu respeito meus colegas.',
+    'O caderno está organizado.',
+    'Eu gosto de ciência.',
+    'A leitura traz conhecimento.',
+    'Contar até dez é fácil.',
+    'Eu escrevo com atenção.',
+    'O quadro é verde na sala.',
   ],
   medio: [
     'Programar é divertido e desafiador.',
     'Ler livros aumenta muito o saber.',
     'Os heróis sempre ajudam os amigos.',
     'Estudar todos os dias melhora muito.',
-    'O recreio é o momento de brincar.',
-    'Aprender a escrever é importante.',
-    'Estudar é aprender coisas novas.',
-    'A amizade faz a vida mais feliz.',
-    'A prática melhora nossas habilidades.',
+    'A prática constante melhora a habilidade de digitar.',
+    'Organização diária facilita a vida na escola.',
+    'Projetos em grupo ensinam colaboração e respeito.',
+    'A curiosidade abre portas para novas descobertas.',
+    'Anotar ideias rápidas evita que elas se percam.',
+    'Resolver problemas exige calma e paciência.',
+    'A revisão do conteúdo fixa melhor a memória.',
+    'Uma boa postura evita dores ao estudar.',
+    'Planejar o estudo ajuda a cumprir metas.',
+    'A tecnologia pode ajudar muito na aprendizagem.',
+    'Reler o texto melhora a compreensão global.',
+    'Treinar digitação aumenta a velocidade com precisão.',
+    'Aprender com erros é parte do processo.',
+    'Dividir tarefas grandes em partes menores ajuda.',
+    'Escrever um pouco por dia melhora a fluência.',
+    'Leitura em voz alta melhora a dicção e confiança.',
   ],
   dificil: [
     'A curiosidade é o pavio na vela do aprendizado.',
     'A prática constante transforma esforço em habilidade.',
     'Disciplina é liberdade, estudo é poder.',
-    'O conhecimento é a chave para o futuro.',
-    'A perseverança é o segredo para vencer desafios.',
-    'O aprendizado é um caminho sem fim.',
-    'Estudar é preparar-se para o sucesso.',
-    'A educação transforma vidas para sempre.',
+    'Persistência silenciosa constrói resultados extraordinários ao longo do tempo.',
+    'Foco absoluto reduz o ruído e eleva a qualidade do estudo.',
+    'Metas claras orientam a ação e medem o progresso real.',
+    'Leitura crítica separa opinião de fato com precisão.',
+    'Síntese eficaz transforma informação em conhecimento aplicável.',
+    'Erros analisados viram mapas para a próxima tentativa.',
+    'Atenção plena reduz distrações e amplia a retenção.',
+    'Vocabulário rico expande o alcance do pensamento.',
+    'Tempo bem gerido multiplica as oportunidades de aprender.',
+    'Repetição espaçada fortalece a memória de longo prazo.',
+    'Analogias iluminam conceitos complexos com clareza.',
+    'Autoria consciente dá voz única às suas ideias.',
+    'Prototipar cedo revela falhas ocultas no raciocínio.',
+    'Argumentos sólidos exigem evidências e lógica consistentes.',
+    'Domínio técnico floresce com prática deliberada diária.',
+    'Reflexão metódica transforma experiência em sabedoria.',
   ],
 }
 
@@ -62,6 +94,14 @@ export default function TypingSpeed() {
   const complete = text === target
   const [awarded, setAwarded] = useState(false)
   useTypingAutoAdvance(!practice && complete, target, setTarget, () => { setText(''); setSeconds(0); setStarted(false); setAwarded(false) }, phrases)
+
+  useEffect(()=>{
+    if (complete && !awarded) {
+      setAwarded(true)
+      playCorrect()
+      addStars('typing', 1)
+    }
+  }, [complete, awarded])
 
   function restart() {
     setText('')
@@ -108,7 +148,6 @@ export default function TypingSpeed() {
         </div>
         <textarea rows={4} value={text} onChange={e=>setText(e.target.value)} style={{ width: '100%', marginTop: 8 }} />
         <p>{complete ? 'Perfeito! 🎉' : 'Continue, você está indo bem!'}</p>
-        {complete && !awarded && (setAwarded(true), playCorrect(), addStars('typing', 1))}
       </div>
     </div>
   )
@@ -141,5 +180,3 @@ function countCorrectChars(input: string, target: string) {
   }
   return n
 }
-
-

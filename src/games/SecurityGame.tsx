@@ -17,6 +17,14 @@ const SAFETY_QUESTIONS: Q[] = [
   { q: 'Publicar fotos com uniforme da escola é...', options: ['Seguro sempre', 'Perigoso, pode expor onde estudo', 'Obrigatório', 'Permitido com senha'], correct: 1 },
   { q: 'Em Wi‑Fi público devo...', options: ['Digitar senhas bancárias', 'Evitar acessar contas importantes', 'Compartilhar o Wi‑Fi', 'Desligar o celular'], correct: 1 },
   { q: 'Se receber um e‑mail estranho com anexo...', options: ['Abro o anexo', 'Apago ou pergunto a um adulto', 'Respondo com meus dados', 'Repasso aos amigos'], correct: 1 },
+  { q: 'Alguém pede foto pessoal em troca de moedas do jogo. Você...', options: ['Envia a foto', 'Ignora e reporta', 'Negocia outra coisa', 'Pede segredo'], correct: 1 },
+  { q: 'Para atualizar um app, o melhor é...', options: ['Baixar de site aleatório', 'Pedir a um adulto e usar loja oficial', 'Instalar qualquer APK', 'Nunca atualizar'], correct: 1 },
+  { q: 'Mensagem diz “urgente! confirme dados agora”. Você...', options: ['Clica no link', 'Verifica com um adulto antes', 'Envia documento', 'Responde com endereço'], correct: 1 },
+  { q: 'Um desconhecido quer te encontrar pessoalmente. O correto é...', options: ['Aceitar se for de dia', 'Levar um amigo apenas', 'Não marcar e avisar um adulto', 'Ir escondido'], correct: 2 },
+  { q: 'Um site pede cartão para um “teste grátis”. Você...', options: ['Digita o cartão', 'Tira foto do cartão', 'Pede ajuda e verifica a segurança', 'Envia por áudio'], correct: 2 },
+  { q: 'Ao criar senha, é importante...', options: ['Usar a mesma em tudo', 'Compartilhar com amigos', 'Ativar autenticação em dois fatores', 'Anotar no perfil'], correct: 2 },
+  { q: 'Se alguém te ameaça no jogo...', options: ['Guarda segredo', 'Responde com ameaça', 'Bloqueia, salva evidências e avisa adulto', 'Dá itens do jogo'], correct: 2 },
+  { q: 'Recebeu um QR code de origem desconhecida. Você...', options: ['Escaneia na hora', 'Pede um adulto para verificar', 'Clica e baixa app', 'Compartilha com turma'], correct: 1 },
 ]
 const PASS_THRESHOLD = Math.ceil(SAFETY_QUESTIONS.length * 0.7)
 
@@ -75,6 +83,11 @@ export default function SecurityGame() {
                 </button>
               ))}
             </div>
+            {chosen !== null && chosen !== q.correct && (
+              <div className="row" style={{ marginTop: 10 }}>
+                <button className="secondary" onClick={next}>Próxima</button>
+              </div>
+            )}
           </>
         ) : (
           <>
@@ -102,5 +115,3 @@ export default function SecurityGame() {
     </div>
   )
 }
-
-

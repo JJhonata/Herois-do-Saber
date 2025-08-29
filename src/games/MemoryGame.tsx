@@ -111,5 +111,3 @@ export default function MemoryGame() {
     </div>
   )
 }
-
-

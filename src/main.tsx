@@ -12,8 +12,3 @@ createRoot(container).render(
     </BrowserRouter>
   </React.StrictMode>
 )
-
-
-
-
-

@@ -31,9 +31,3 @@ export function shootConfetti() {
   }
   frame()
 }
-
-
-
-
-
-

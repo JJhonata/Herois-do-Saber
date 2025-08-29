@@ -137,5 +137,3 @@ export default function MathGame() {
     </div>
   )
 }
-
-
