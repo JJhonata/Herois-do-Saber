@@ -12,6 +12,16 @@ const WORDS = [
   { w: 'amigo', hint: 'Companheiro' },
   { w: 'feliz', hint: 'Sentimento bom' },
   { w: 'saber', hint: 'Conhecimento' },
+  { w: 'sol', hint: 'Estrela que brilha durante o dia' },
+  { w: 'flor', hint: 'Planta colorida que cresce no jardim' },
+  { w: 'arcoiris', hint: 'Fenômeno que ocorre após a chuva' },
+  { w: 'peixe', hint: 'Animal que vive na água' },
+  { w: 'chuva', hint: 'Água que cai do céu' },
+  { w: 'nuvem', hint: 'Formação de vapor d\'água no céu' },
+  { w: 'cachorro', hint: 'Animal que gosta de correr e brincar' },
+  { w: 'estrela', hint: 'Objeto brilhante no céu durante a noite' },
+  { w: 'montanha', hint: 'Formação de terra alta' },
+  { w: 'pipa', hint: 'Brinquedo que voa no céu com fio' },
 ]
 
 export default function WordScramble() {
