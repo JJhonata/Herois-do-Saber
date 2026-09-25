@@ -1,0 +1,8 @@
+import { useState } from 'react'
+import { addStars } from '../lib/progress'
+import { playCorrect, playIncorrect } from '../lib/sfx'
+
+const items=[{name:'Lápis',emoji:'✏️',price:3},{name:'Caderno',emoji:'📒',price:12},{name:'Borracha',emoji:'🧽',price:4},{name:'Livro',emoji:'📘',price:18},{name:'Suco',emoji:'🧃',price:6},{name:'Régua',emoji:'📏',price:5},{name:'Canetinha',emoji:'🖍️',price:8},{name:'Mochila',emoji:'🎒',price:35},{name:'Estojo',emoji:'👝',price:20},{name:'Garrafinha',emoji:'🥤',price:15},{name:'Quebra-cabeça',emoji:'🧩',price:25},{name:'Bola',emoji:'⚽',price:30}]
+export default function MoneyGame(){const [i,setI]=useState(0);const [answer,setAnswer]=useState('');const [msg,setMsg]=useState('');const item=items[i%items.length];const paid=item.price+([5,10,20][i%3]);const change=paid-item.price;
+ function check(){if(Number(answer)===change){addStars('money',2);playCorrect();setMsg('Troco correto! 💰');setTimeout(()=>{setI(x=>x+1);setAnswer('');setMsg('')},700)}else{playIncorrect();setMsg(`Dica: faça R$ ${paid} - R$ ${item.price}.`)}}
+ return <div className="container"><div className="game"><h2>Mercadinho do Saber 🛒💵</h2><p>Calcule quanto deve voltar de troco.</p><div className="shop-item"><span>{item.emoji}</span><strong>{item.name}</strong><b>Preço: R$ {item.price},00</b><small>Você pagou com R$ {paid},00</small></div><div className="row" style={{justifyContent:'center'}}><input inputMode="numeric" value={answer} onChange={e=>setAnswer(e.target.value)} placeholder="Troco em reais"/><button className="accent" onClick={check}>Conferir</button></div><p className="game-message">{msg}</p></div></div>}

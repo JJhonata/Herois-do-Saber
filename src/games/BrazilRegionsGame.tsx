@@ -1,0 +1,7 @@
+import { useMemo, useState } from 'react'
+import { addStars } from '../lib/progress'
+import { playCorrect, playIncorrect } from '../lib/sfx'
+
+const qs=[['Ceará','Nordeste'],['Amazonas','Norte'],['São Paulo','Sudeste'],['Paraná','Sul'],['Goiás','Centro-Oeste'],['Bahia','Nordeste'],['Pará','Norte'],['Minas Gerais','Sudeste'],['Acre','Norte'],['Rondônia','Norte'],['Maranhão','Nordeste'],['Pernambuco','Nordeste'],['Mato Grosso','Centro-Oeste'],['Mato Grosso do Sul','Centro-Oeste'],['Espírito Santo','Sudeste'],['Rio de Janeiro','Sudeste'],['Santa Catarina','Sul'],['Rio Grande do Sul','Sul'],['Tocantins','Norte'],['Alagoas','Nordeste']]
+const REGIONS=['Norte','Nordeste','Centro-Oeste','Sudeste','Sul']
+export default function BrazilRegionsGame(){const [i,setI]=useState(0);const [score,setScore]=useState(0);const [msg,setMsg]=useState('');const q=qs[i%qs.length];const opts=useMemo(()=>[...REGIONS].sort(()=>Math.random()-.5),[i]);function choose(r:string){if(r===q[1]){setScore(s=>s+1);addStars('regions',1);playCorrect();setMsg('Muito bem! 🇧🇷');setTimeout(()=>{setI(x=>x+1);setMsg('')},600)}else{playIncorrect();setMsg('Tente lembrar em qual parte do mapa esse estado fica.')}}return <div className="container"><div className="game"><h2>Regiões do Brasil 🇧🇷🗺️</h2><p>Em qual região brasileira fica o estado abaixo?</p><div className="state-card">📍 {q[0]}</div><div className="choice-grid">{opts.map(o=><button key={o} onClick={()=>choose(o)}>{o}</button>)}</div><p className="game-message">Acertos: {score} · {msg}</p></div></div>}

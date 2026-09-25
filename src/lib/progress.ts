@@ -1,4 +1,4 @@
-type GameId = 'math' | 'memory' | 'quiz' | 'security' | 'ditado' | 'scramble' | 'typing' | 'paint'
+type GameId = 'math' | 'memory' | 'quiz' | 'security' | 'ditado' | 'scramble' | 'typing' | 'paint' | 'syllable' | 'sequence' | 'science' | 'category' | 'sentence' | 'times' | 'clock' | 'money' | 'wordsearch' | 'regions' | 'habitat' | 'reading'
 
 type Progress = Record<GameId, number>
 
@@ -9,7 +9,7 @@ function read(): Progress {
     const raw = localStorage.getItem(KEY)
     if (raw) return JSON.parse(raw) as Progress
   } catch {}
-  return { math: 0, memory: 0, quiz: 0, security: 0, ditado: 0, scramble: 0, typing: 0, paint: 0 }
+  return { math: 0, memory: 0, quiz: 0, security: 0, ditado: 0, scramble: 0, typing: 0, paint: 0, syllable: 0, sequence: 0, science: 0, category: 0, sentence: 0, times: 0, clock: 0, money: 0, wordsearch: 0, regions: 0, habitat: 0, reading: 0 }
 }
 
 function write(p: Progress) {

@@ -3,19 +3,22 @@ import { playCorrect } from '../lib/sfx'
 import { addStars } from '../lib/progress'
 
 type Card = { symbol: string, flipped: boolean, matched: boolean }
-type Theme = 'frutas' | 'animais' | 'emojis' | 'veiculos'
+type Theme = 'frutas' | 'animais' | 'emojis' | 'veiculos' | 'escola' | 'natureza'
 
 const THEMES: Record<Theme, string[]> = {
   frutas: ['🍎','🍌','🍇','🍓','🍉','🍊','🍍','🥝','🍑','🍒','🍐','🥭'],
   animais: ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐷'],
   emojis: ['😀','😁','😂','😊','😍','😎','🤩','🥳','🤠','😺','🤖','👾'],
   veiculos: ['🚗','🚕','🚙','🚌','🚎','🏎️','🚓','🚑','🚒','🚜','🚲','🛴'],
+  escola: ['📚','✏️','📒','🎒','📏','🖍️','✂️','🧮','📝','🖊️','📐','🗂️'],
+  natureza: ['🌳','🌻','🌈','☀️','🌙','⭐','☁️','🌊','🍃','🌵','🍄','🌸'],
 }
 
 const SIZES = [
   { label: '3 x 4', cols: 3, rows: 4 }, // 6 pares
   { label: '4 x 4', cols: 4, rows: 4 }, // 8 pares
   { label: '4 x 5', cols: 4, rows: 5 }, // 10 pares
+  { label: '4 x 6', cols: 4, rows: 6 }, // 12 pares
 ]
 
 export default function MemoryGame() {
@@ -85,6 +88,8 @@ export default function MemoryGame() {
               <option value="animais">Animais</option>
               <option value="emojis">Emojis</option>
               <option value="veiculos">Veículos</option>
+              <option value="escola">Escola</option>
+              <option value="natureza">Natureza</option>
             </select>
             <label style={{ marginLeft: 8 }}>Tamanho:</label>
             <select value={size.label} onChange={e=> setSize(SIZES.find(s=>s.label===e.target.value) || SIZES[1])}>

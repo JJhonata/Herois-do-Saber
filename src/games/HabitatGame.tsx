@@ -1,0 +1,7 @@
+import { useMemo, useState } from 'react'
+import { addStars } from '../lib/progress'
+import { playCorrect, playIncorrect } from '../lib/sfx'
+
+const animals=[['🐟','Peixe','Água'],['🐒','Macaco','Floresta'],['🐪','Camelo','Deserto'],['🐧','Pinguim','Região gelada'],['🦁','Leão','Savana'],['🐸','Sapo','Áreas úmidas'],['🐬','Golfinho','Água'],['🦥','Bicho-preguiça','Floresta'],['🦎','Lagarto','Deserto'],['🐻‍❄️','Urso-polar','Região gelada'],['🦓','Zebra','Savana'],['🦆','Pato','Áreas úmidas']]
+const habitats=['Água','Floresta','Deserto','Região gelada','Savana','Áreas úmidas']
+export default function HabitatGame(){const [i,setI]=useState(0);const [msg,setMsg]=useState('');const a=animals[i%animals.length];const opts=useMemo(()=>[a[2],...habitats.filter(h=>h!==a[2]).sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5),[i]);function choose(o:string){if(o===a[2]){addStars('habitat',1);playCorrect();setMsg('Habitat correto! 🌿');setTimeout(()=>{setI(x=>x+1);setMsg('')},650)}else{playIncorrect();setMsg('Pense no clima e no lugar onde esse animal vive.') }}return <div className="container"><div className="game"><h2>Onde Eu Vivo? 🐾🌍</h2><p>Relacione cada animal ao seu habitat.</p><div className="animal-card"><span>{a[0]}</span><strong>{a[1]}</strong></div><div className="choice-grid">{opts.map(o=><button key={o} onClick={()=>choose(o)}>{o}</button>)}</div><p className="game-message">{msg}</p></div></div>}

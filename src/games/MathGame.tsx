@@ -3,7 +3,7 @@ import { playBonus, playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
 import { addStars } from '../lib/progress'
 
-type Level = 1 | 2 | 3
+type Level = 1 | 2 | 3 | 4 | 5
 type Op = 'add' | 'sub' | 'mul' | 'div' | 'mix'
 
 function randomIn(max: number) { return Math.floor(Math.random() * (max + 1)) }
@@ -28,8 +28,8 @@ function buildOptions(correct: number, op: Exclude<Op, 'mix'>) {
 }
 function buildQuestion(level: Level, op: Op) {
   const chosen = pickOp(op)
-  const ranges: Record<Level, number> = { 1: 10, 2: 20, 3: 50 }
-  const smallRanges: Record<Level, number> = { 1: 5, 2: 10, 3: 12 }
+  const ranges: Record<Level, number> = { 1: 10, 2: 20, 3: 50, 4: 100, 5: 500 }
+  const smallRanges: Record<Level, number> = { 1: 5, 2: 10, 3: 12, 4: 15, 5: 20 }
   let a = randomIn(ranges[level])
   let b = randomIn(ranges[level])
   if (chosen === 'sub') { if (b > a) [a, b] = [b, a] }
@@ -98,6 +98,8 @@ export default function MathGame() {
             <option value={1}>Fácil (0-10)</option>
             <option value={2}>Médio (0-20)</option>
             <option value={3}>Difícil (0-50)</option>
+            <option value={4}>Desafio (0-100)</option>
+            <option value={5}>Super-herói (0-500)</option>
           </select>
           <label style={{ marginLeft: 12 }}>Operação:</label>
           <select value={op} onChange={e=> setOp(e.target.value as Op)}>
