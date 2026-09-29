@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { useGameState } from '../lib/gameSession'
 import { playCorrect } from '../lib/sfx'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
+import { recordAnswer } from '../lib/review'
 
 const PHRASES = [
   { text: 'Os heróis estudam todos os dias.', hint: 'Rotina dos heróis' },
@@ -52,6 +53,7 @@ export default function DitadoMaluco() {
   const [awarded, setAwarded] = useGameState(false)
   useEffect(()=>{
     if (completo && !awarded) {
+      recordAnswer('ditado', 'Escreva a frase que ouviu.', text, frase, true, 'Compare os sons da fala às letras e revise acentos, espaços e pontuação.')
       playCorrect();
       addStars('ditado', 1);
       setAwarded(true)

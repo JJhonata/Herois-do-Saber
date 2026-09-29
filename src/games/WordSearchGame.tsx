@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useGameState } from '../lib/gameSession'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
+import { recordAnswer } from '../lib/review'
 
 const WORDS = ['ESCOLA', 'LIVRO', 'AMIGO', 'CASA', 'GATO', 'BOLA', 'FLOR', 'SOL']
 const DESKTOP_GRID_SIZE = 12
@@ -134,6 +135,7 @@ export default function WordSearchGame() {
     const reversedTarget = [...target].reverse().join('')
     const matchesPrefix = target.startsWith(sequence) || reversedTarget.startsWith(sequence)
     if (!matchesPrefix) {
+      recordAnswer('wordsearch', `Encontre a palavra ${target}`, sequence, target, false, 'Selecione as letras vizinhas na ordem da palavra. Ela pode estar escrita nos dois sentidos.')
       setSelection([])
       playIncorrect()
       setMessage('Essa sequência não forma a palavra. Tente começar de novo.')
@@ -143,6 +145,7 @@ export default function WordSearchGame() {
     setSelection(nextSelection)
     setMessage(`Letras selecionadas: ${sequence}`)
     if (sequence === target || sequence === reversedTarget) {
+      recordAnswer('wordsearch', `Encontre a palavra ${target}`, sequence, target, true, 'A palavra estava escondida em uma linha diagonal, vertical ou horizontal.')
       setFoundWords((words) => [...words, target])
       setFoundCells((cells) => [...cells, ...nextSelection])
       setSelection([])

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import { useGameState } from '../lib/gameSession'
 import { playCorrect } from '../lib/sfx'
 import { addStars } from '../lib/progress'
+import { recordAnswer } from '../lib/review'
 
 type Level = 'facil' | 'medio' | 'dificil'
 const BANK: Record<Level, string[]> = {
@@ -116,6 +117,7 @@ export default function TypingSpeed() {
   useEffect(()=>{
     if (complete && !practice && !awarded) {
       setAwarded(true)
+      recordAnswer('typing', 'Digite a frase apresentada.', text, target, true, 'Confira acentos, espaços e pontuação para manter precisão ao digitar.')
       playCorrect()
       addStars('typing', 1)
     }

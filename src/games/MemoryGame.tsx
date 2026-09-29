@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import { useGameState } from '../lib/gameSession'
 import { playCorrect } from '../lib/sfx'
 import { addStars, getRecommendedDifficulty } from '../lib/progress'
+import { recordAnswer } from '../lib/review'
 
 type Card = { symbol: string, flipped: boolean, matched: boolean }
 type Theme = 'frutas' | 'animais' | 'emojis' | 'veiculos' | 'escola' | 'natureza'
@@ -53,7 +54,9 @@ export default function MemoryGame() {
     if (!locked || openIdxs.length !== 2) return
     const [a, b] = openIdxs
     const timeout = window.setTimeout(() => {
-      if (cards[a]?.symbol === cards[b]?.symbol) {
+      const matched = cards[a]?.symbol === cards[b]?.symbol
+      recordAnswer('memory', `Encontre um par nas posições ${a + 1} e ${b + 1}`, `${cards[a]?.symbol || '?'} e ${cards[b]?.symbol || '?'}`, matched ? 'duas cartas iguais' : 'duas cartas iguais', matched, 'Observe as figuras e tente memorizar onde cada uma aparece.')
+      if (matched) {
         setCards((previous) => previous.map((card, index) => index === a || index === b ? { ...card, matched: true } : card))
         setScore((current) => current + 1)
         setMatchedCount((current) => current + 1)

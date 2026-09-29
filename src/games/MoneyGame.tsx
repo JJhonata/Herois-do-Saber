@@ -1,6 +1,7 @@
 import { useGameState } from '../lib/gameSession'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
+import { recordAnswer } from '../lib/review'
 
 const items = [
   { name: 'Lápis', emoji: '✏️', price: 3 }, { name: 'Caderno', emoji: '📒', price: 12 },
@@ -9,6 +10,10 @@ const items = [
   { name: 'Canetinha', emoji: '🖍️', price: 8 }, { name: 'Mochila', emoji: '🎒', price: 35 },
   { name: 'Estojo', emoji: '👝', price: 20 }, { name: 'Garrafinha', emoji: '🥤', price: 15 },
   { name: 'Quebra-cabeça', emoji: '🧩', price: 25 }, { name: 'Bola', emoji: '⚽', price: 30 },
+  { name: 'Apontador', emoji: '🔺', price: 2 }, { name: 'Giz de cera', emoji: '🖍️', price: 9 },
+  { name: 'Revista', emoji: '📰', price: 7 }, { name: 'Pote de tinta', emoji: '🎨', price: 14 },
+  { name: 'Lanterna', emoji: '🔦', price: 22 }, { name: 'Jogo de tabuleiro', emoji: '🎲', price: 28 },
+  { name: 'Fone de ouvido', emoji: '🎧', price: 32 }, { name: 'Patins', emoji: '🛼', price: 45 },
 ]
 
 export default function MoneyGame() {
@@ -25,7 +30,10 @@ export default function MoneyGame() {
 
   function check() {
     if (resolved) return
-    if (Number(answer) === change && answer.trim() !== '') {
+    const correct = Number(answer) === change && answer.trim() !== ''
+    if (!answer.trim()) return
+    recordAnswer('money', `O item ${item.name} custa R$ ${item.price},00. Você pagou R$ ${paid},00. Qual é o troco?`, `R$ ${answer},00`, `R$ ${change},00`, correct, `Subtraia o preço do valor pago: ${paid} - ${item.price} = ${change}.`)
+    if (correct) {
       setResolved(true)
       addStars('money', 2)
       playCorrect()

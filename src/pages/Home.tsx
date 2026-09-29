@@ -7,7 +7,7 @@ import type { Difficulty } from '../lib/progress'
 import { hasGameSession } from '../lib/gameSession'
 
 const areaIcons: Record<string, string> = {
-  Todos: '🌟', Português: '📖', Matemática: '🔢', Ciências: '🔬', Geografia: '🗺️',
+  Todos: '🌟', Português: '📖', Inglês: '🇬🇧', Matemática: '🔢', Ciências: '🔬', Geografia: '🗺️',
   Raciocínio: '🧠', Tecnologia: '💻', Criatividade: '🎨',
 }
 

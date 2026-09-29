@@ -3,6 +3,7 @@ import { useGameState } from '../lib/gameSession'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
+import { recordAnswer } from '../lib/review'
 
 type Category = 'Animal' | 'Alimento' | 'Objeto' | 'Lugar'
 type Item = { name: string; emoji: string; category: Category }
@@ -37,6 +38,18 @@ const ITEMS: Item[] = [
   { name: 'Uva', emoji: '🍇', category: 'Alimento' },
   { name: 'Computador', emoji: '💻', category: 'Objeto' },
   { name: 'Fazenda', emoji: '🚜', category: 'Lugar' },
+  { name: 'Abelha', emoji: '🐝', category: 'Animal' },
+  { name: 'Arara', emoji: '🦜', category: 'Animal' },
+  { name: 'Cavalo', emoji: '🐎', category: 'Animal' },
+  { name: 'Abacaxi', emoji: '🍍', category: 'Alimento' },
+  { name: 'Pera', emoji: '🍐', category: 'Alimento' },
+  { name: 'Feijão', emoji: '🫘', category: 'Alimento' },
+  { name: 'Vassoura', emoji: '🧹', category: 'Objeto' },
+  { name: 'Telefone', emoji: '☎️', category: 'Objeto' },
+  { name: 'Óculos', emoji: '👓', category: 'Objeto' },
+  { name: 'Mercado', emoji: '🛍️', category: 'Lugar' },
+  { name: 'Praça', emoji: '⛲', category: 'Lugar' },
+  { name: 'Aeroporto', emoji: '🛫', category: 'Lugar' },
 ]
 
 export default function CategoryGame() {
@@ -44,14 +57,17 @@ export default function CategoryGame() {
   const [round, setRound] = useGameState(0)
   const [score, setScore] = useGameState(0)
   const [picked, setPicked] = useGameState<Category | null>(null)
-  const item = useMemo(() => ITEMS[round % ITEMS.length], [round])
+  const [itemOrder] = useGameState(() => ITEMS.map((_, index) => index).sort(() => Math.random() - .5))
+  const item = useMemo(() => ITEMS[itemOrder[round % itemOrder.length]], [round, itemOrder])
   const optionCount = level === 'easy' ? 2 : level === 'medium' ? 3 : CATEGORIES.length
   const options = useMemo(() => [item.category, ...CATEGORIES.filter(category => category !== item.category).sort(() => Math.random() - .5).slice(0, optionCount - 1)].sort(() => Math.random() - .5), [round, level])
 
   function choose(category: Category) {
     if (picked !== null) return
+    const correct = category === item.category
+    recordAnswer('category', `Qual é a categoria de ${item.name}?`, category, item.category, correct, 'Classifique pela característica principal do item. Alguns objetos podem ter usos diferentes, mas aqui vale a categoria indicada no jogo.')
     setPicked(category)
-    if (category === item.category) {
+    if (correct) {
       setScore(s => s + 1)
       addStars('category', 1)
       playCorrect()

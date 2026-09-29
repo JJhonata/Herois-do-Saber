@@ -1,5 +1,6 @@
 import { useGameState } from '../lib/gameSession'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
+import { recordAnswer } from '../lib/review'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 
 const WORDS = [
@@ -69,7 +70,10 @@ export default function WordScramble() {
   function check() {
     if (solved) return
     setTries((count) => count + 1)
-    if (input.trim().toLocaleLowerCase('pt-BR') === pick.w) {
+    const correct = input.trim().toLocaleLowerCase('pt-BR') === pick.w
+    if (!input.trim()) return
+    recordAnswer('scramble', `Desembaralhe: ${scrambled} (${pick.hint})`, input.trim(), pick.w, correct, `A palavra correta é ${pick.w}. Use a dica e reorganize as letras.`)
+    if (correct) {
       setSolved(true)
       addStars('scramble', 1)
       playCorrect()

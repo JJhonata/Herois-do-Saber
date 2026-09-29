@@ -1,6 +1,7 @@
 import { useGameState } from '../lib/gameSession'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
+import { recordAnswer } from '../lib/review'
 
 type Q = { q: string, options: string[], correct: number }
 
@@ -42,8 +43,10 @@ export default function SecurityGame() {
 
   function pick(idx: number) {
     if (chosen !== null) return
+    const correct = idx === q.correct
+    recordAnswer('security', q.q, q.options[idx], q.options[q.correct], correct, 'Proteja senhas, localização, fotos e outros dados pessoais. Em caso de dúvida, converse com um adulto de confiança.')
     setChosen(idx)
-    if (idx === q.correct) {
+    if (correct) {
       setScore(s=>s+1)
       playCorrect()
       addStars('security', 1)

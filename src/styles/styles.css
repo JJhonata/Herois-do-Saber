@@ -558,7 +558,143 @@ html[data-contrast="true"] .card, html[data-contrast="true"] .game, html[data-co
 .profile-setup h2{margin:4px 0;font-size:1.25rem}.profile-setup p{margin:6px 0 0;color:#4b5b70}.profile-options{display:flex;flex-wrap:wrap;gap:10px}.profile-option{display:grid;gap:4px;flex:1 1 150px;min-height:68px;padding:12px;text-align:left;border:1px solid #bdd2ea;border-radius:14px;background:#fff;color:#233650;cursor:pointer}.profile-option:hover{border-color:#5486ce;background:#f9fcff}.profile-option span{font-size:.85rem;color:#5c6a7d}.profile-skip{border:0;background:transparent;color:#405875;text-decoration:underline;cursor:pointer;padding:8px}
 .learning-dashboard{margin-top:22px}.learning-dashboard h3{margin:0 0 12px}.subject-progress-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}.subject-progress-card{padding:12px;border:1px solid #dce5ef;border-radius:14px;background:rgba(255,255,255,.75)}.subject-progress-card>div:first-child{display:flex;justify-content:space-between;gap:8px}.subject-progress-card p{margin:7px 0 9px;color:#536276;font-size:.88rem}.subject-progress-card .mission-track{height:7px}
 .learning-feedback{margin-top:10px}.learning-feedback-toggle{padding:8px 0;border:0;background:transparent;color:#244e83;font-weight:800;text-align:left;cursor:pointer}.learning-feedback>p{margin:4px 0;padding:12px;border-radius:12px;background:#f1f7ff;color:#23405f;line-height:1.5}.learning-feedback>.gentle-feedback{border-left:4px solid #79bf7b;background:#f3fbf2}.reset-game-button{background:#fff4ed!important;color:#753f22!important}
+.round-review{margin-top:12px;padding:12px;border:1px solid #cfdbeb;border-radius:14px;background:#fff}.round-review-heading{display:flex;justify-content:space-between;gap:12px;align-items:center}.round-review-heading span,.round-review>p{color:#4d5e73;font-size:.9rem}.round-review>p{margin:6px 0}.mistake-review{display:grid;gap:8px;margin:8px 0 0;padding:0;list-style:none}.mistake-review li{display:grid;gap:4px;padding:10px;border-radius:10px;background:#fff5f2;border-left:4px solid #df8168}.mistake-review li span,.mistake-review li small{color:#59483e;line-height:1.4}.mistake-review li small{margin-top:2px}
 html[data-reduced-motion="true"] *,html[data-reduced-motion="true"] *::before,html[data-reduced-motion="true"] *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
 @media(prefers-reduced-motion:reduce){html:not([data-reduced-motion="false"]) *,html:not([data-reduced-motion="false"]) *::before,html:not([data-reduced-motion="false"]) *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 html[data-contrast="true"] .profile-setup,html[data-contrast="true"] .profile-option,html[data-contrast="true"] .subject-progress-card,html[data-contrast="true"] .learning-feedback>p{background:#fff;color:#000;border-color:#000}
 @media(max-width:760px){.profile-setup{grid-template-columns:1fr}.profile-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}.profile-skip{justify-self:start}}
+
+/* Novas atividades: frações, leitura de mapas e ciclos da natureza */
+.fraction-order,.map-mission-prompt,.nature-cycle-heading{display:flex;align-items:center;gap:14px;margin:18px auto;padding:14px 16px;max-width:640px;border:1px solid #e6d8b4;border-radius:18px;background:#fff9e9;text-align:left}
+.fraction-chef,.map-mission-prompt>span,.nature-cycle-heading>span{flex:0 0 auto;font-size:42px}
+.fraction-order strong,.map-mission-prompt strong,.nature-cycle-heading strong{font-size:1.08rem}
+.fraction-order p,.map-mission-prompt p{margin:5px 0 0;color:#5d5140;line-height:1.45}
+.fraction-pieces{--piece-count:4;display:grid;grid-template-columns:repeat(auto-fit,minmax(58px,1fr));gap:10px;max-width:520px;margin:18px auto 10px;padding:18px;border:5px solid #ac6339;border-radius:26px;background:#f5d796;box-shadow:inset 0 0 0 3px #ffe9b5,0 5px 0 #75482f}
+.fraction-piece{display:grid;place-items:center;min-height:64px;border:2px solid #d7a650;border-radius:15px;background:#fff3d1;line-height:1}
+.fraction-piece.topped{background:#ffd7a4;border-color:#d77c39;box-shadow:inset 0 0 0 2px #fff2d9}
+.fraction-piece svg{width:min(100%,58px);height:auto;overflow:visible}
+.pizza-slice-base{fill:#f5cf72;stroke:#ae6937;stroke-width:4;stroke-linejoin:round}
+.pizza-slice-crust{fill:none;stroke:#a9542b;stroke-width:10;stroke-linecap:round}
+.pizza-toppings{fill:#d34e3d;stroke:#a9362e;stroke-width:1.5}
+.fraction-count{margin:10px 0;color:#5e513e;text-align:center;font-size:.92rem}
+.fraction-options button{font-size:1.15rem;font-variant-numeric:tabular-nums}
+.fraction-next-button,.map-next-button{display:block;min-height:48px;margin:12px auto 0;padding:10px 22px}
+.map-game{--map-cell-size:clamp(60px,10vw,92px)}
+.map-mission-prompt{border-color:#c9def0;background:#f0f8ff}
+.map-mission-prompt p{color:#455e75}
+.map-layout{display:flex;justify-content:center;align-items:center;gap:24px;margin:18px auto}
+.town-map{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));width:min(100%,460px);aspect-ratio:1;border:3px solid #648a67;border-radius:14px;overflow:hidden;background:#f4fae8}
+.town-cell{display:flex;min-width:0;flex-direction:column;justify-content:center;align-items:center;gap:2px;border:1px solid #d6e3c9;background:rgba(255,255,255,.48);text-align:center}
+.town-cell>span{font-size:clamp(20px,4vw,32px);line-height:1.1}
+.town-cell small{max-width:100%;padding:0 2px;color:#35523b;font-size:clamp(8px,1.35vw,11px);font-weight:800;line-height:1.1;overflow-wrap:anywhere}
+.town-cell.school-cell{background:#d9ecff;box-shadow:inset 0 0 0 2px #5792ce}
+.town-cell.target-cell{background:#fff0ac;box-shadow:inset 0 0 0 3px #e4a82c}
+.compass{position:relative;display:grid;grid-template:repeat(3,36px)/repeat(3,36px);place-items:center;color:#244b78;font-weight:900}
+.compass span{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#eef5fb}
+.compass-n{grid-area:1/2}.compass-e{grid-area:2/3}.compass-s{grid-area:3/2}.compass-w{grid-area:2/1}.compass-center{grid-area:2/2;color:#d48a16}
+.map-key{max-width:600px;margin:4px auto 12px;color:#52647b;text-align:center;font-size:.9rem;line-height:1.5}
+.map-directions{grid-template-columns:repeat(2,minmax(0,1fr));max-width:620px;margin-inline:auto}
+.map-directions.hard-map{grid-template-columns:repeat(4,minmax(0,1fr))}
+.map-directions button{text-transform:capitalize}
+.nature-cycle-heading{border-color:#c6dfc3;background:#f1faef}
+.nature-cycle-heading small{display:block;margin-top:4px;color:#526c50}
+.nature-order-slots{display:grid;gap:8px;max-width:720px;margin:16px auto;text-align:left}
+.nature-order-slot{display:flex;align-items:center;gap:10px;min-height:48px;padding:8px 12px;border:1px dashed #b7c9b1;border-radius:12px;background:#fbfdf9}
+.nature-order-slot>span{display:grid;place-items:center;flex:0 0 30px;height:30px;border-radius:50%;background:#e4eee0;color:#385b35;font-weight:900}
+.nature-order-slot p{margin:0;color:#657463}
+.nature-order-slot.filled{border-style:solid;border-color:#9cbe95;background:#f3fbf1}
+.nature-order-slot.filled p{color:#294b2b;font-weight:700}
+.nature-step-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;max-width:760px;margin:16px auto}
+.nature-step-list button{display:flex;align-items:flex-start;gap:9px;min-height:64px;padding:12px;border:1px solid #cad9c5;border-radius:14px;background:#fff;color:#29432b;text-align:left;line-height:1.4;cursor:pointer}
+.nature-step-list button>span{flex:0 0 auto;color:#427b3f;font-size:1.1rem;font-weight:900}
+.nature-step-list button.selected,.nature-step-list button:disabled{border-color:#b4c8ae;background:#eef4eb;color:#70826e;cursor:default}
+.nature-actions{justify-content:center;flex-wrap:wrap}
+.nature-actions button:disabled{opacity:.55;cursor:not-allowed}
+.nature-progress-track{height:9px;max-width:700px;margin:18px auto;border-radius:999px;background:#e6eee3;overflow:hidden}
+.nature-progress-track span{display:block;height:100%;border-radius:inherit;background:#58a64e;transition:width .2s ease}
+.nature-question{margin:20px 0 12px;color:#294b2b;text-align:center}
+.nature-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:760px;margin:0 auto}
+.nature-choices button{display:flex;align-items:flex-start;gap:10px;min-height:64px;padding:14px;border:2px solid #d2dfce;border-radius:15px;background:#fff;color:#29432b;text-align:left;line-height:1.4;cursor:pointer}
+.nature-choices button>span{flex:0 0 auto;color:#56854f;font-size:1.1rem;font-weight:900}
+.nature-choices button:hover:not(:disabled){border-color:#79ad70;background:#f7fcf5}
+.nature-choices button:disabled{cursor:default}
+.nature-choices button.correct{border-color:#53a966;background:#effaf0;color:#245331}
+.nature-choices button.incorrect{border-color:#dc9a85;background:#fff4f0;color:#784b3c}
+.nature-feedback{min-height:26px;margin:14px auto 8px;text-align:center}
+.nature-feedback.retry{color:#81513d}
+.nature-sequence-summary{display:grid;gap:8px;max-width:700px;margin:16px auto;padding-left:34px;text-align:left}
+.nature-sequence-summary li{padding:10px 12px;border-radius:11px;background:#f3f8f0;color:#304a2e;line-height:1.4}
+.nature-learning-note{max-width:700px;margin:14px auto;padding:13px 15px;border-left:4px solid #72a968;border-radius:8px;background:#f3f9f0;color:#395637;line-height:1.5;text-align:left}
+.nature-result-title{text-align:center;color:#2f773d}
+.nature-next-button{display:block;min-height:48px;margin:14px auto 0;padding:10px 22px}
+@media(max-width:560px){
+  .fraction-order,.map-mission-prompt,.nature-cycle-heading{align-items:flex-start;padding:12px}
+  .fraction-chef,.map-mission-prompt>span,.nature-cycle-heading>span{font-size:34px}
+  .fraction-pieces{grid-template-columns:repeat(auto-fit,minmax(48px,1fr));gap:6px;padding:10px;border-width:4px;border-radius:20px}
+  .fraction-piece{min-height:52px;font-size:28px}
+  .fraction-piece svg{width:min(100%,48px)}
+  .map-layout{gap:10px}
+  .town-map{width:min(calc(100vw - 112px),360px)}
+  .town-cell small{font-size:8px}
+  .compass{grid-template:repeat(3,28px)/repeat(3,28px);font-size:.8rem}
+  .compass span{width:24px;height:24px}
+  .map-key{font-size:.84rem}
+  .map-directions.hard-map{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .map-directions.hard-map button{min-height:46px;padding:8px 3px;font-size:.84rem}
+  .nature-step-list{grid-template-columns:1fr}
+  .nature-step-list button{min-height:54px}
+  .nature-choices{grid-template-columns:1fr}
+  .nature-choices button{min-height:52px;padding:12px}
+  .nature-actions button{flex:1 1 140px}
+}
+
+/* Novos jogos de escrita, inglês e raciocínio */
+.punctuation-progress{width:max-content;margin:16px auto 8px;padding:6px 12px;border-radius:999px;background:#edf4ff;color:#315783;font-size:.88rem;font-weight:800}
+.content-phase-track{height:8px;max-width:680px;margin:8px auto 16px;border-radius:999px;background:#e8edf5;overflow:hidden}
+.content-phase-track span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#58a64e,#40b8a0);transition:width .2s ease}
+.punctuation-sentence{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px;min-height:108px;margin:12px auto;padding:20px 14px;border:1px solid #d8e1ef;border-radius:18px;background:#f7faff;color:#233751;font-size:clamp(1.2rem,4vw,1.65rem);font-weight:750;line-height:1.5;text-align:center}
+.punctuation-gap{display:inline-grid;place-items:center;min-width:50px;min-height:48px;padding:0 8px;border:2px dashed #8ea9cc;border-radius:12px;background:#fff;color:#456992}
+.punctuation-gap.correct{border-style:solid;border-color:#59a56c;background:#effaf0;color:#27603a}
+.punctuation-gap.incorrect{border-style:solid;border-color:#d88d76;background:#fff2ee;color:#7b4738}
+.punctuation-hint{min-height:24px;color:#5a6474;text-align:center}
+.punctuation-options{display:flex;justify-content:center;gap:12px;margin:16px auto}
+.punctuation-options button{min-width:70px;min-height:60px;border:2px solid #d2deed;border-radius:16px;background:#fff;color:#254b7d;font-size:2rem;font-weight:850;cursor:pointer}
+.punctuation-options button:hover:not(:disabled){border-color:#7da1ce;background:#f2f7ff}
+.punctuation-options button:disabled{cursor:default}
+.punctuation-next-button,.logic-next-button{display:block;min-height:48px;margin:12px auto 0;padding:10px 22px}
+.punctuation-feedback{max-width:680px;margin:12px auto;line-height:1.5;text-align:center}
+.english-prompt,.logic-case-heading{display:flex;align-items:center;gap:12px;max-width:620px;margin:16px auto;padding:12px 14px;border:1px solid #cbdcf0;border-radius:16px;background:#f2f8ff;text-align:left}
+.english-prompt>span,.logic-case-heading>span{font-size:36px}
+.english-prompt p{margin:4px 0 0;color:#5b6b80}
+.english-listen-button{display:block;min-width:200px;min-height:52px;margin:14px auto 8px;border:0;border-radius:14px;background:#375da3;color:#fff;font-size:1.04rem;font-weight:800;cursor:pointer}
+.english-hint-toggle{display:block;margin:8px auto;padding:8px 12px;border:0;background:transparent;color:#365c91;font-weight:800;text-decoration:underline;cursor:pointer}
+.english-hint{max-width:520px;margin:8px auto;padding:10px 12px;border-radius:12px;background:#fff8df;color:#5d4d1d;text-align:center}
+.english-picture-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:10px;max-width:620px;margin:18px auto}
+.english-picture-grid button{display:grid;place-items:center;min-width:0;min-height:100px;border:2px solid #d7e1ef;border-radius:18px;background:#fff;color:#304563;font-size:clamp(2.2rem,8vw,3rem);cursor:pointer}
+.english-picture-grid button:hover:not(:disabled){transform:translateY(-2px);border-color:#739bd0;background:#f7faff}
+.english-picture-grid button.correct{border-color:#5aa36a;background:#effaf0}
+.english-picture-grid button.incorrect{border-color:#d88d76;background:#fff2ee}
+.english-picture-grid button:disabled{cursor:default}
+.english-feedback{min-height:28px;text-align:center}
+.english-feedback.retry{color:#80513f}
+.english-success-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:10px}
+.english-success-actions button{min-height:46px}
+.logic-case-heading{border-color:#ded5f3;background:#f8f5ff}
+.logic-case-heading small{display:block;margin-top:4px;color:#655a79}
+.logic-clues-title,.logic-question{max-width:690px;margin:18px auto 10px;color:#34435c}
+.logic-clues{display:grid;gap:8px;max-width:690px;margin:12px auto;padding-left:34px;text-align:left}
+.logic-clues li{padding:10px 12px;border-radius:12px;background:#f4f2fa;color:#423c50;line-height:1.45}
+.logic-question{margin-top:20px;text-align:center}
+.logic-options{max-width:650px;margin-inline:auto}
+.logic-feedback{max-width:700px;margin:12px auto;line-height:1.5;text-align:center}
+.logic-feedback.retry{color:#80513f}
+@media(max-width:560px){
+  .punctuation-sentence{min-height:92px;padding:16px 10px}
+  .punctuation-options{gap:8px}
+  .punctuation-options button{min-width:64px;min-height:56px}
+  .english-picture-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .english-picture-grid button{min-height:86px}
+  .english-success-actions{display:grid;grid-template-columns:1fr}
+  .logic-clues{padding-left:28px}
+  .logic-options{grid-template-columns:repeat(2,minmax(0,1fr))}
+}

@@ -3,6 +3,7 @@ import { useGameState } from '../lib/gameSession'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
+import { recordAnswer } from '../lib/review'
 
 type Fact = { statement: string; answer: boolean; explanation: string; emoji: string }
 
@@ -27,6 +28,17 @@ const FACTS: Fact[] = [
   { statement: 'A reciclagem pode transformar materiais usados em novos produtos.', answer: true, explanation: 'Reciclar reduz desperdícios e reaproveita matérias-primas.', emoji: '♻️' },
   { statement: 'O cérebro faz parte do sistema nervoso.', answer: true, explanation: 'O cérebro coordena muitas funções do corpo.', emoji: '🧠' },
   { statement: 'Todos os planetas possuem luz própria.', answer: false, explanation: 'Planetas refletem a luz das estrelas; não produzem luz como elas.', emoji: '🪐' },
+  { statement: 'A Terra tem um satélite natural chamado Lua.', answer: true, explanation: 'A Lua acompanha a Terra em sua órbita e reflete a luz do Sol.', emoji: '🌕' },
+  { statement: 'O som consegue viajar pelo espaço vazio.', answer: false, explanation: 'O som precisa de matéria, como ar ou água, para se propagar.', emoji: '🚀' },
+  { statement: 'As baleias são mamíferos.', answer: true, explanation: 'Baleias respiram ar, têm sangue quente e amamentam seus filhotes.', emoji: '🐋' },
+  { statement: 'Mercúrio é o planeta mais próximo do Sol.', answer: true, explanation: 'Mercúrio é o primeiro planeta do Sistema Solar a partir do Sol.', emoji: '☀️' },
+  { statement: 'A luz viaja mais devagar que o som no ar.', answer: false, explanation: 'A luz chega muito antes do som, como vemos durante uma tempestade.', emoji: '⚡' },
+  { statement: 'A água do mar é geralmente salgada.', answer: true, explanation: 'A água do mar contém sais dissolvidos; rios e lagos costumam ter água doce.', emoji: '🌊' },
+  { statement: 'As raízes ajudam a planta a se prender ao solo.', answer: true, explanation: 'Além de absorver água e sais minerais, as raízes ajudam a sustentar a planta.', emoji: '🌱' },
+  { statement: 'O ar é uma mistura de gases.', answer: true, explanation: 'O ar contém principalmente nitrogênio e oxigênio, além de outros gases.', emoji: '💨' },
+  { statement: 'A sombra aparece quando a luz atravessa um objeto opaco.', answer: false, explanation: 'A sombra aparece quando um objeto bloqueia a passagem da luz.', emoji: '🔦' },
+  { statement: 'O gelo derrete quando recebe calor suficiente.', answer: true, explanation: 'Com o aquecimento, a água passa do estado sólido para o líquido.', emoji: '🧊' },
+  { statement: 'Os morcegos são aves porque voam.', answer: false, explanation: 'Morcegos são mamíferos: têm pelos e alimentam os filhotes com leite.', emoji: '🦇' },
 ]
 
 export default function ScienceTrueFalse() {
@@ -34,12 +46,17 @@ export default function ScienceTrueFalse() {
   const [round, setRound] = useGameState(0)
   const [score, setScore] = useGameState(0)
   const [answer, setAnswer] = useGameState<boolean | null>(null)
-  const deck = FACTS.filter((_, index) => level === 'easy' ? index < 8 : level === 'medium' ? index >= 4 && index < 16 : index >= 8)
+  const deck = level === 'easy'
+    ? [...FACTS.slice(0, 8), ...FACTS.slice(20, 24)]
+    : level === 'medium'
+      ? [...FACTS.slice(4, 16), ...FACTS.slice(24, 27)]
+      : FACTS.slice(8)
   const fact = useMemo(() => deck[round % deck.length], [round, level])
   const correct = answer === fact.answer
 
   function choose(value: boolean) {
     if (answer !== null) return
+    recordAnswer('science', fact.statement, value ? 'Verdadeiro' : 'Falso', fact.answer ? 'Verdadeiro' : 'Falso', value === fact.answer, fact.explanation)
     setAnswer(value)
     if (value === fact.answer) {
       setScore(s => s + 1)

@@ -3,6 +3,7 @@ import { useGameState } from '../lib/gameSession'
 import { playBonus, playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
 import { addStars, getRecommendedDifficulty } from '../lib/progress'
+import { recordAnswer } from '../lib/review'
 
 type Level = 1 | 2 | 3 | 4 | 5
 type Op = 'add' | 'sub' | 'mul' | 'div' | 'mix'
@@ -76,6 +77,7 @@ export default function MathGame() {
     if (chosen !== null || finished) return
     setChosen(opt)
     const ok = opt === q.correct
+    recordAnswer('math', `${q.a} ${q.symbol} ${q.b}`, String(opt), String(q.correct), ok, 'Resolva a operação com calma e confira o sinal usado na conta.')
     setMsg(ok ? 'Muito bem! ✅' : 'Ops, tente outra vez!')
     if (ok) {
       setScore(s => s + 1)

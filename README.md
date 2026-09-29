@@ -4,11 +4,12 @@ Aplicativo web educativo com minijogos para crianças, feito com React, TypeScri
 
 ## Jogos
 
-- **Português:** Sílaba Mágica, Ditado, Desembaralhar Palavras, Formar Frases, Detetive da Leitura, Caça-Palavras e Categorias.
-- **Matemática:** Matemática, Sequências, Batalha da Tabuada, Relógio e Horas e Mercadinho.
-- **Ciências:** Verdadeiro ou Falso e Onde Eu Vivo?.
-- **Geografia:** Regiões do Brasil.
-- **Raciocínio:** Memória e Quiz.
+- **Português:** Sílaba Mágica, Ditado, Desembaralhar Palavras, Formar Frases, Pontuação Express, Detetive da Leitura, Caça-Palavras e Categorias.
+- **Inglês:** Inglês de Bolso.
+- **Matemática:** Matemática, Sequências, Batalha da Tabuada, Relógio e Horas, Mercadinho e Pizzaria das Frações.
+- **Ciências:** Verdadeiro ou Falso, Onde Eu Vivo? e Ciclos da Natureza.
+- **Geografia:** Regiões do Brasil e Missão no Mapa.
+- **Raciocínio:** Memória, Quiz e Detetives da Lógica.
 - **Tecnologia:** Segurança Digital e Digitação.
 - **Criatividade:** Pintura.
 

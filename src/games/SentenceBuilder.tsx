@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useGameState } from '../lib/gameSession'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
+import { recordAnswer } from '../lib/review'
 import { shootConfetti } from '../lib/confetti'
 
 const ITEMS = [
@@ -37,7 +38,9 @@ export default function SentenceBuilder(){
   const built=picked.map(i=>words[Number(i)]).join(' ')
   function check(){
     if(solved)return
-    if(built===sentence){ setSolved(true); addStars('sentence',2); playCorrect(); shootConfetti(); setMsg('Perfeito! Você montou a frase! 🎉'); setTimeout(()=>{setRound(r=>r+1);setPicked([]);setMsg('');setSolved(false)},900) }
+    const correct=built===sentence
+    recordAnswer('sentence', 'Organize as palavras para formar uma frase.', built, sentence, correct, 'A ordem das palavras ajuda a frase a comunicar uma ideia clara.')
+    if(correct){ setSolved(true); addStars('sentence',2); playCorrect(); shootConfetti(); setMsg('Perfeito! Você montou a frase! 🎉'); setTimeout(()=>{setRound(r=>r+1);setPicked([]);setMsg('');setSolved(false)},900) }
     else { playIncorrect(); setMsg('Ainda não. Observe a ordem das palavras e tente novamente.') }
   }
   return <div className="container"><div className="game"><h2>Construtor de Frases 🧱📝</h2><p>Toque nas palavras na ordem correta para formar uma frase.</p>

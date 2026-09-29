@@ -3,6 +3,7 @@ import { useGameState } from '../lib/gameSession'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
+import { recordAnswer } from '../lib/review'
 
 type Item = {
   word: string
@@ -50,6 +51,8 @@ export default function SyllableGame() {
     if (answered) return
     setAnswered(option)
     const ok = option === item.parts[item.missing]
+    const expected = item.parts[item.missing]
+    recordAnswer('syllable', `Complete ${item.parts.map((part, index) => index === item.missing ? '___' : part).join(' ')}`, option, expected, ok, 'Separe a palavra em partes sonoras e procure a sílaba que completa a palavra.')
     if (ok) {
       setScore(s => s + 1)
       addStars('syllable', 1)

@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useGameState } from '../lib/gameSession'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
+import { recordAnswer } from '../lib/review'
 
 type Q = { q: string, options: string[], correct: number }
 type Category = 'geral' | 'ciencias' | 'portugues' | 'geografia'
@@ -124,8 +125,10 @@ export default function QuizGame() {
 
   function pick(idx: number) {
     if (chosen !== null) return
+    const correct = idx === q.correct
+    recordAnswer('quiz', q.q, q.options[idx], q.options[q.correct], correct, 'Leia a pergunta novamente e compare as opções com as informações que você conhece.')
     setChosen(idx)
-    if (idx === q.correct) { setScore(s=>s+1); playCorrect(); addStars('quiz', 1); setTimeout(()=> next(), 700) } else { playIncorrect() }
+    if (correct) { setScore(s=>s+1); playCorrect(); addStars('quiz', 1); setTimeout(()=> next(), 700) } else { playIncorrect() }
   }
 
   function next() {

@@ -3,6 +3,7 @@ import { useGameState } from '../lib/gameSession'
 import { addStars, getRecommendedDifficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
+import { recordAnswer } from '../lib/review'
 
 type Level = 'easy' | 'medium' | 'hard'
 type Question = { values: number[]; answer: number; options: number[]; clue: string }
@@ -50,8 +51,11 @@ export default function SequenceGame() {
 
   function choose(value: number) {
     if (picked !== null) return
+    const expected = question.answer
+    const correct = value === expected
+    recordAnswer('sequence', `Complete a sequência ${question.values.join(', ')}, …`, String(value), String(expected), correct, question.clue)
     setPicked(value)
-    if (value === question.answer) {
+    if (correct) {
       setScore(s => s + 1)
       addStars('sequence', 1)
       playCorrect()
