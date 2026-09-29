@@ -1,0 +1,73 @@
+import { lazy } from 'react'
+
+export const gameCatalog = [
+  { id: 'syllable', path: '/syllable', title: 'Sílaba Mágica', desc: 'Complete as palavras!', emoji: '✨', tag: '1º-3º', cls: 'card-syllable', area: 'Português', component: lazy(() => import('../games/SyllableGame')) },
+  { id: 'ditado', path: '/ditado', title: 'Ditado', desc: 'Ouça e escreva!', emoji: '🎧', tag: '1º-3º', cls: 'card-ditado', area: 'Português', component: lazy(() => import('../games/DitadoMaluco')) },
+  { id: 'scramble', path: '/scramble', title: 'Desembaralhar', desc: 'Monte a palavra!', emoji: '🔤', tag: '3º-5º', cls: 'card-scramble', area: 'Português', component: lazy(() => import('../games/WordScramble')) },
+  { id: 'sentence', path: '/sentence', title: 'Formar Frases', desc: 'Coloque as palavras em ordem!', emoji: '🧱', tag: '1º-4º', cls: 'card-sentence', area: 'Português', component: lazy(() => import('../games/SentenceBuilder')) },
+  { id: 'reading', path: '/reading', title: 'Detetive da Leitura', desc: 'Leia e descubra as respostas!', emoji: '🕵️', tag: '2º-5º', cls: 'card-reading', area: 'Português', component: lazy(() => import('../games/ReadingGame')) },
+  { id: 'wordsearch', path: '/wordsearch', title: 'Caça-Palavras', desc: 'Encontre palavras escondidas!', emoji: '🔎', tag: '1º-5º', cls: 'card-wordsearch', area: 'Português', component: lazy(() => import('../games/WordSearchGame')) },
+  { id: 'category', path: '/category', title: 'Categorias', desc: 'Classifique as palavras!', emoji: '📚', tag: '1º-4º', cls: 'card-category', area: 'Português', component: lazy(() => import('../games/CategoryGame')) },
+  { id: 'math', path: '/math', title: 'Matemática', desc: 'Some e aprenda!', emoji: '🧮', tag: '1º-5º', cls: 'card-math', area: 'Matemática', component: lazy(() => import('../games/MathGame')) },
+  { id: 'sequence', path: '/sequence', title: 'Sequências', desc: 'Descubra o próximo!', emoji: '🧩', tag: '1º-5º', cls: 'card-sequence', area: 'Matemática', component: lazy(() => import('../games/SequenceGame')) },
+  { id: 'times', path: '/times', title: 'Batalha da Tabuada', desc: 'Treine multiplicação!', emoji: '⚔️', tag: '2º-5º', cls: 'card-times', area: 'Matemática', component: lazy(() => import('../games/TimesTableGame')) },
+  { id: 'clock', path: '/clock', title: 'Relógio e Horas', desc: 'Aprenda a ler horários!', emoji: '⏰', tag: '2º-5º', cls: 'card-clock', area: 'Matemática', component: lazy(() => import('../games/ClockGame')) },
+  { id: 'money', path: '/money', title: 'Mercadinho', desc: 'Calcule preços e troco!', emoji: '🛒', tag: '2º-5º', cls: 'card-money', area: 'Matemática', component: lazy(() => import('../games/MoneyGame')) },
+  { id: 'science', path: '/science', title: 'Ciências', desc: 'Verdadeiro ou falso!', emoji: '🔬', tag: '2º-5º', cls: 'card-science', area: 'Ciências', component: lazy(() => import('../games/ScienceTrueFalse')) },
+  { id: 'habitat', path: '/habitat', title: 'Onde Eu Vivo?', desc: 'Descubra os habitats!', emoji: '🐾', tag: '1º-5º', cls: 'card-habitat', area: 'Ciências', component: lazy(() => import('../games/HabitatGame')) },
+  { id: 'regions', path: '/regions', title: 'Regiões do Brasil', desc: 'Conheça nosso país!', emoji: '🇧🇷', tag: '3º-5º', cls: 'card-regions', area: 'Geografia', component: lazy(() => import('../games/BrazilRegionsGame')) },
+  { id: 'memory', path: '/memory', title: 'Memória', desc: 'Vire as cartas!', emoji: '🧠', tag: '1º-5º', cls: 'card-memory', area: 'Raciocínio', component: lazy(() => import('../games/MemoryGame')) },
+  { id: 'quiz', path: '/quiz', title: 'Quiz', desc: 'Responda certo!', emoji: '❓', tag: '2º-5º', cls: 'card-quiz', area: 'Raciocínio', component: lazy(() => import('../games/QuizGame')) },
+  { id: 'security', path: '/security', title: 'Segurança Digital', desc: 'Aprenda a se proteger!', emoji: '🔐', tag: '3º-5º', cls: 'card-security', area: 'Tecnologia', component: lazy(() => import('../games/SecurityGame')) },
+  { id: 'typing', path: '/typing', title: 'Digitação', desc: 'Digite as frases!', emoji: '⌨️', tag: '2º-5º', cls: 'card-typing', area: 'Tecnologia', component: lazy(() => import('../games/TypingSpeed')) },
+  { id: 'paint', path: '/paint', title: 'Pintura', desc: 'Desenhe e crie!', emoji: '🎨', tag: '1º-5º', cls: 'card-paint', area: 'Criatividade', component: lazy(() => import('../games/PaintGame')) },
+] as const
+
+export type GameId = (typeof gameCatalog)[number]['id']
+export const gameAreas = ['Português', 'Matemática', 'Ciências', 'Geografia', 'Raciocínio', 'Tecnologia', 'Criatividade'] as const
+
+export const gameHints: Record<GameId, string> = {
+  syllable: 'Fale a palavra devagar e perceba em quantas partes sua voz se separa.',
+  ditado: 'Ouça a palavra até o fim. Pense nos sons e depois confira cada letra que escreveu.',
+  scramble: 'Procure uma letra que possa iniciar a palavra e use a dica da rodada para lembrar o significado.',
+  sentence: 'Descubra quem está na frase e o que essa pessoa ou coisa está fazendo.',
+  reading: 'Volte ao texto e procure uma frase que confirme a resposta.',
+  wordsearch: 'Comece por uma das pontas da palavra e siga para uma letra vizinha.',
+  category: 'Compare os objetos e procure uma característica que alguns deles compartilham.',
+  math: 'Separe a conta em passos menores. Você também pode trocar a operação no seletor.',
+  sequence: 'Compare números vizinhos: quanto a sequência aumenta ou diminui?',
+  times: 'Multiplicar é somar o mesmo número várias vezes. Experimente contar em grupos.',
+  clock: 'Observe primeiro o ponteiro pequeno para a hora e depois o grande para os minutos.',
+  money: 'Subtraia o preço do valor pago para descobrir o troco.',
+  science: 'Pense no que o ser vivo precisa para crescer, se alimentar e se proteger.',
+  habitat: 'Imagine o clima, a comida e o abrigo de que esse animal precisa.',
+  regions: 'Localize o estado no mapa e compare sua posição com as cinco regiões do Brasil.',
+  memory: 'Observe com calma cada carta e tente guardar a posição antes de escolher a próxima.',
+  quiz: 'Leia todas as opções e elimine primeiro as que não combinam com a pergunta.',
+  security: 'Desconfie de pedidos de senhas e dados pessoais. Compartilhe informações só com responsáveis.',
+  typing: 'Leia a frase inteira antes de começar e confira acentos e espaços no final.',
+  paint: 'Escolha uma ferramenta e uma cor; você pode desfazer uma etapa se quiser experimentar.',
+}
+
+export const gameLearnings: Record<GameId, string> = {
+  syllable: 'As sílabas são partes sonoras das palavras. Diga a palavra em voz alta para perceber cada parte.',
+  ditado: 'Ouvir os sons e relacioná-los às letras ajuda a escrever palavras com mais segurança.',
+  scramble: 'As letras formam palavras que carregam significados. Reorganize-as e confira se a palavra faz sentido.',
+  sentence: 'Uma frase organiza palavras para comunicar uma ideia. A ordem ajuda a entender quem faz o quê.',
+  reading: 'Voltar ao texto e encontrar pistas ajuda a responder perguntas de compreensão.',
+  wordsearch: 'Encontrar palavras exige observar letras, direção e sequência dentro da grade.',
+  category: 'Agrupar palavras por características em comum é uma forma de classificar e organizar informações.',
+  math: 'Resolver operações passo a passo ajuda a compreender como os números se relacionam.',
+  sequence: 'Sequências seguem uma regra. Comparar os termos ajuda a descobrir o padrão.',
+  times: 'A multiplicação representa grupos com a mesma quantidade e pode ser entendida como adição repetida.',
+  clock: 'O ponteiro pequeno indica as horas e o grande ajuda a contar os minutos.',
+  money: 'Para calcular o troco, compare o valor pago com o preço e descubra a diferença.',
+  science: 'Observar evidências e conhecimentos sobre a natureza ajuda a avaliar afirmações científicas.',
+  habitat: 'Cada animal vive melhor em um ambiente que oferece alimento, abrigo e condições adequadas.',
+  regions: 'O Brasil é dividido em cinco regiões, que agrupam estados com localizações e características próximas.',
+  memory: 'Usar a memória visual e relacionar cartas ajuda a encontrar pares.',
+  quiz: 'Ler com atenção, comparar alternativas e recuperar o que já sabe são estratégias importantes.',
+  security: 'Senhas e dados pessoais devem ser protegidos. Em situações suspeitas, procure um adulto de confiança.',
+  typing: 'Digitar com precisão envolve atenção às letras, aos acentos, aos espaços e à pontuação.',
+  paint: 'Experimentar cores e ferramentas desenvolve criatividade e coordenação motora.',
+}
