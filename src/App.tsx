@@ -42,7 +42,7 @@ export default function App() {
         <GamePhase path={location.pathname} />
         <GameSupport path={location.pathname} />
       </>}
-      <main id="main-content" className="route-transition" key={location.pathname} tabIndex={-1}>
+      <main id="main-content" className={`route-transition${activeGame ? ' game-route' : ''}`} data-game-area={activeGame?.area} key={location.pathname} tabIndex={-1}>
         <Suspense fallback={<div className="container" role="status">Carregando jogo…</div>}>
           <Routes>
             <Route path="/" element={<Home />} />

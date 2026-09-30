@@ -10,6 +10,11 @@ const areaIcons: Record<string, string> = {
   Todos: '🌟', Português: '📖', Inglês: '🇬🇧', Matemática: '🔢', Ciências: '🔬', Geografia: '🗺️',
   Raciocínio: '🧠', Tecnologia: '💻', Criatividade: '🎨',
 }
+const areaDescriptions: Record<string, string> = {
+  Todos: 'Todas as aventuras em um só lugar', Português: 'Palavras, leitura e escrita', Inglês: 'Novas palavras e sons',
+  Matemática: 'Números, formas e desafios', Ciências: 'Natureza e descobertas', Geografia: 'Mapas e lugares do Brasil',
+  Raciocínio: 'Pistas, memória e estratégia', Tecnologia: 'Internet e habilidades digitais', Criatividade: 'Ideias para desenhar e criar',
+}
 
 export default function Home() {
   const [, setTick] = useState(0)
@@ -22,6 +27,7 @@ export default function Home() {
   }, [])
 
   const shown = area === 'Todos' ? gameCatalog : gameCatalog.filter((game) => game.area === area)
+  const gamesByArea = Object.fromEntries(gameAreas.map((name) => [name, gameCatalog.filter((game) => game.area === name).length])) as Record<(typeof gameAreas)[number], number>
   const total = gameCatalog.reduce((sum, game) => sum + getStars(game.id), 0)
   const areas = ['Todos', ...gameAreas]
   const lastGameId = getLastPlayedGame()
@@ -39,11 +45,12 @@ export default function Home() {
     </section>}
     <section className="hero" aria-labelledby="home-title">
       <div>
+        <span className="hero-kicker">UM MUNDO DE DESCOBERTAS</span>
         <h1 id="home-title">Heróis do Saber</h1>
         <p>Aprenda brincando! Escolha uma matéria, complete desafios e ganhe estrelas ✨</p>
         <div className="hero-stars">⭐ {total} estrelas conquistadas</div>
       </div>
-      <img src="/logo.webp" alt="" className="hero-logo" />
+      <div className="hero-mascot" aria-hidden="true"><span className="hero-spark hero-spark-one">✦</span><img src="/logo.webp" alt="" className="hero-logo" /><span className="hero-spark hero-spark-two">✦</span></div>
     </section>
 
     <section className="journey-cards" aria-label="Sua jornada de aprendizagem">
@@ -85,22 +92,32 @@ export default function Home() {
       </div>
     </section>
 
-    <div className="subject-tabs" role="group" aria-label="Filtrar jogos por matéria">
-      {areas.map((name) => <button key={name} type="button" className={area === name ? 'subject-tab active' : 'subject-tab'} aria-pressed={area === name} onClick={() => setArea(name)}>
-        {areaIcons[name]} {name}
-      </button>)}
-    </div>
+    <section className="learning-paths" aria-labelledby="paths-title">
+      <div className="section-heading"><div><span className="eyebrow">ESCOLHA POR ONDE COMEÇAR</span><h2 id="paths-title">Explore uma trilha</h2></div><span>{gameCatalog.length} aventuras</span></div>
+      <div className="subject-tabs" role="group" aria-label="Filtrar jogos por matéria">
+        {areas.map((name) => <button key={name} type="button" data-area={name} className={area === name ? 'subject-tab active' : 'subject-tab'} aria-pressed={area === name} onClick={() => setArea(name)}>
+          <span className="subject-tab-icon" aria-hidden="true">{areaIcons[name]}</span>
+          <span className="subject-tab-copy"><strong>{name === 'Todos' ? 'Todas as trilhas' : name}</strong><small>{areaDescriptions[name]}</small></span>
+          <span className="subject-tab-count">{name === 'Todos' ? gameCatalog.length : gamesByArea[name as (typeof gameAreas)[number]]}</span>
+        </button>)}
+      </div>
+    </section>
 
     <section aria-labelledby="games-title">
       <div className="section-heading"><div><span className="eyebrow">ÁREA DE APRENDIZAGEM</span><h2 id="games-title">{area === 'Todos' ? 'Todos os jogos' : area}</h2></div><span>{shown.length} {shown.length === 1 ? 'jogo' : 'jogos'}</span></div>
-      <div className="grid">{shown.map((game) => <article className={`card ${game.cls}`} key={game.id}>
+      <div className="grid">{shown.map((game) => {
+        const stars = getStars(game.id)
+        const phase = Math.min(10, Math.floor(stars / 5) + 1)
+        const phaseStars = stars >= 50 ? 5 : stars % 5
+        return <article className={`card ${game.cls}`} data-area={game.area} key={game.id}>
         <div className="card-top"><div className="game-emoji" aria-hidden="true">{game.emoji}</div><div className="badge">{game.tag}</div></div>
         <span className="subject-label">{game.area}</span>
         <h3>{game.title}</h3>
         <p>{game.desc}</p>
-        <div className="star-line">⭐ {getStars(game.id)} estrelas</div>
+        <div className="card-progress-copy"><span>⭐ {stars} estrelas</span><span>{stars >= 50 ? 'Concluído' : `Fase ${phase} de 10`}</span></div>
+        <div className="card-progress-track" role="progressbar" aria-label={`Progresso de ${game.title}`} aria-valuemin={0} aria-valuemax={50} aria-valuenow={Math.min(stars, 50)}><span style={{ width: `${(Math.min(stars, 50) / 50) * 100}%` }} /></div>
         <Link to={game.path} className="accent play-button">Jogar agora</Link>
-      </article>)}</div>
+      </article>})}</div>
     </section>
   </div>
 }

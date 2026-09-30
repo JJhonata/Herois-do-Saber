@@ -698,3 +698,133 @@ html[data-contrast="true"] .profile-setup,html[data-contrast="true"] .profile-op
   .logic-clues{padding-left:28px}
   .logic-options{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* Polimento visual: trilhas, cartões e feedbacks consistentes */
+.hero{position:relative;isolation:isolate;overflow:hidden;min-height:230px;border:1px solid rgba(255,255,255,.48);background:radial-gradient(circle at 82% 15%,rgba(255,255,255,.24) 0 3px,transparent 4px),radial-gradient(circle at 75% 80%,rgba(255,255,255,.17) 0 2px,transparent 3px),linear-gradient(125deg,#3d8cda 0%,#5a69dc 56%,#8055c9 100%);box-shadow:0 16px 36px rgba(65,82,179,.2)}
+.hero::before{content:"";position:absolute;z-index:-1;right:7%;top:-95px;width:290px;height:290px;border:1px solid rgba(255,255,255,.2);border-radius:50%;box-shadow:0 0 0 26px rgba(255,255,255,.045),0 0 0 54px rgba(255,255,255,.035)}
+.hero::after{content:"✦";position:absolute;right:32%;top:22%;color:rgba(255,255,255,.74);font-size:23px;animation:hero-twinkle 3.2s ease-in-out infinite}
+.hero-kicker{display:inline-flex;margin-bottom:10px;padding:6px 10px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(255,255,255,.13);font-size:.72rem;font-weight:900;letter-spacing:.12em}
+.hero h1{max-width:680px;text-wrap:balance;text-shadow:0 2px 14px rgba(24,37,104,.2)}
+.hero p{max-width:540px;line-height:1.55}
+.hero-mascot{position:relative;display:grid;place-items:center;flex:0 0 clamp(130px,18vw,190px);min-height:150px}
+.hero-logo{position:relative;z-index:1;width:auto;max-width:100%;height:clamp(110px,15vw,160px);filter:drop-shadow(0 12px 13px rgba(28,34,102,.22));animation:hero-float 4.2s ease-in-out infinite}
+.hero-spark{position:absolute;z-index:2;color:#fff1a8;text-shadow:0 2px 10px rgba(56,50,120,.22);font-size:28px}
+.hero-spark-one{top:4px;left:15px;animation:hero-twinkle 2.8s ease-in-out infinite}
+.hero-spark-two{right:8px;bottom:12px;font-size:20px;animation:hero-twinkle 3.6s ease-in-out infinite reverse}
+@keyframes hero-float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
+@keyframes hero-twinkle{0%,100%{opacity:.55;transform:scale(.86)}50%{opacity:1;transform:scale(1.12)}}
+.journey-card{position:relative;overflow:hidden;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.journey-card::after{content:"";position:absolute;right:-24px;top:-32px;width:100px;height:100px;border-radius:50%;background:#f3efff;opacity:.65;pointer-events:none}
+.journey-card>*{position:relative;z-index:1}
+.journey-card:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(45,31,89,.1)}
+.suggestion-card{background:linear-gradient(115deg,#fffdf1,#fff 72%);border-color:#f0e4b3}
+.suggestion-card>span{background:#fff3c4}
+.resume-card{background:linear-gradient(115deg,#f2f8ff,#fff 72%);border-color:#cfe0f5}
+.resume-card>span{background:#e3f0ff}
+.learning-paths{margin:24px 0 12px}
+.learning-paths .section-heading{margin-bottom:10px}
+.subject-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:10px;overflow:visible;padding:4px 2px 12px}
+.subject-tab{display:grid;grid-template-columns:42px minmax(0,1fr) 30px;align-items:center;gap:10px;min-width:0;min-height:82px;padding:12px;text-align:left;white-space:normal;border:1px solid #e4e7f2;border-radius:18px;background:linear-gradient(135deg,var(--trail-wash,#fff),#fff 80%);box-shadow:0 3px 10px rgba(45,31,89,.045);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease}
+.subject-tab:hover{transform:translateY(-2px);border-color:var(--trail-color,#8070cd);box-shadow:0 8px 18px rgba(45,31,89,.1)}
+.subject-tab.active{border-color:var(--trail-color,#6952c4);background:linear-gradient(135deg,var(--trail-color,#6952c4),var(--trail-color,#6952c4));color:#fff;box-shadow:0 7px 18px color-mix(in srgb,var(--trail-color,#6952c4) 25%,transparent)}
+.subject-tab-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:var(--trail-wash,#f1ebff);font-size:23px}
+.subject-tab.active .subject-tab-icon{background:rgba(255,255,255,.2)}
+.subject-tab-copy{display:grid;gap:3px;min-width:0}
+.subject-tab-copy strong{font-size:.98rem;line-height:1.2}
+.subject-tab-copy small{color:var(--text-muted);font-size:.75rem;font-weight:650;line-height:1.3}
+.subject-tab.active .subject-tab-copy small{color:rgba(255,255,255,.84)}
+.subject-tab-count{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.75);color:var(--trail-color,#51428e);font-size:.78rem;font-weight:900}
+.subject-tab.active .subject-tab-count{background:rgba(255,255,255,.19);color:#fff}
+.subject-tab-arrow{display:none}
+.subject-tab[data-area="Todos"]{--trail-color:#654ac0;--trail-wash:#f0ebff}
+.subject-tab[data-area="Português"]{--trail-color:#b43d68;--trail-wash:#fff0f4}
+.subject-tab[data-area="Inglês"]{--trail-color:#28659c;--trail-wash:#edf6ff}
+.subject-tab[data-area="Matemática"]{--trail-color:#a96300;--trail-wash:#fff5df}
+.subject-tab[data-area="Ciências"]{--trail-color:#34783b;--trail-wash:#eef8ec}
+.subject-tab[data-area="Geografia"]{--trail-color:#16717b;--trail-wash:#eaf8f8}
+.subject-tab[data-area="Raciocínio"]{--trail-color:#694aa6;--trail-wash:#f2edff}
+.subject-tab[data-area="Tecnologia"]{--trail-color:#435ba1;--trail-wash:#edf1ff}
+.subject-tab[data-area="Criatividade"]{--trail-color:#a64284;--trail-wash:#fff0fa}
+.grid{align-items:stretch}
+.card{position:relative;isolation:isolate;overflow:hidden;min-height:292px;padding:20px;border-radius:24px;background:linear-gradient(145deg,var(--card-wash,#fff),#fff 58%);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.card::before{content:"";position:absolute;z-index:-1;top:-44px;right:-38px;width:130px;height:130px;border-radius:50%;background:var(--card-wash,#f7f5ff);opacity:.9;pointer-events:none}
+.card>*{position:relative;z-index:1}
+.card[data-area="Português"]{--card-accent:#b43d68;--card-wash:#fff5f7}
+.card[data-area="Inglês"]{--card-accent:#28659c;--card-wash:#f2f8ff}
+.card[data-area="Matemática"]{--card-accent:#a96300;--card-wash:#fff9ed}
+.card[data-area="Ciências"]{--card-accent:#34783b;--card-wash:#f3faf1}
+.card[data-area="Geografia"]{--card-accent:#16717b;--card-wash:#f0fafa}
+.card[data-area="Raciocínio"]{--card-accent:#694aa6;--card-wash:#f7f4ff}
+.card[data-area="Tecnologia"]{--card-accent:#435ba1;--card-wash:#f3f5ff}
+.card[data-area="Criatividade"]{--card-accent:#a64284;--card-wash:#fff5fb}
+.card[data-area]{border-top-color:var(--card-accent)}
+.card[data-area] .game-emoji{background:var(--card-wash);font-size:35px}
+.card[data-area] h3{color:var(--card-accent)}
+.card:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--card-accent,#7c4dff) 30%,white);box-shadow:0 14px 28px rgba(45,31,89,.12)}
+.card h3{font-size:1.22rem;line-height:1.25}
+.card p{min-height:45px}
+.card-progress-copy{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;margin-top:auto;color:#5c5471;font-size:.82rem;font-weight:800}
+.card-progress-copy span:last-child{color:var(--card-accent,#6047a4)}
+.card-progress-track{width:100%;height:6px;border-radius:999px;background:#e9eaf1;overflow:hidden}
+.card-progress-track span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--card-accent,#7c4dff),color-mix(in srgb,var(--card-accent,#7c4dff) 55%,#71d1b1));transition:width .35s ease}
+.card .play-button{margin-top:4px;background:var(--card-accent,#6849bd);color:#fff;box-shadow:0 4px 0 color-mix(in srgb,var(--card-accent,#6849bd) 78%,#16152c)}
+.card .play-button:hover{filter:brightness(1.08);box-shadow:0 7px 14px color-mix(in srgb,var(--card-accent,#6849bd) 24%,transparent)}
+.game-route[data-game-area="Português"]{--game-accent:#b43d68;--game-wash:#fff6f8}
+.game-route[data-game-area="Inglês"]{--game-accent:#28659c;--game-wash:#f2f8ff}
+.game-route[data-game-area="Matemática"]{--game-accent:#a96300;--game-wash:#fff9ed}
+.game-route[data-game-area="Ciências"]{--game-accent:#34783b;--game-wash:#f3faf1}
+.game-route[data-game-area="Geografia"]{--game-accent:#16717b;--game-wash:#f0fafa}
+.game-route[data-game-area="Raciocínio"]{--game-accent:#694aa6;--game-wash:#f7f4ff}
+.game-route[data-game-area="Tecnologia"]{--game-accent:#435ba1;--game-wash:#f3f5ff}
+.game-route[data-game-area="Criatividade"]{--game-accent:#a64284;--game-wash:#fff5fb}
+.game-route .game{position:relative;overflow:hidden;border-top:5px solid var(--game-accent,#7351c8);background:linear-gradient(180deg,var(--game-wash,#f8f6ff),#fff 230px);box-shadow:0 12px 30px rgba(45,31,89,.09)}
+.game-route .game>h2{margin-bottom:8px;color:#302950;font-size:clamp(1.55rem,3.8vw,2.05rem);line-height:1.16;text-wrap:balance}
+.game-route .game>p:first-of-type{color:#5c5471}
+.game-route .difficulty-picker{width:fit-content;max-width:100%;margin:14px auto 18px;padding:8px 12px;border:1px solid color-mix(in srgb,var(--game-accent,#7351c8) 18%,white);border-radius:14px;background:rgba(255,255,255,.82)}
+.game-route .difficulty-picker label{color:var(--game-accent,#7351c8)}
+.game-route .difficulty-picker select{min-width:min(250px,65vw);border-color:#d9deea;background:#fff}
+.game-support-actions{border-color:#e6e2f0;background:linear-gradient(110deg,#fff,#faf9ff);box-shadow:0 4px 12px rgba(45,31,89,.04)}
+.game-message:not(:empty){padding:10px 14px;border:1px solid #cae8d2;border-radius:14px;background:linear-gradient(120deg,#f2fbf3,#fff);color:#2d653d;animation:feedback-pop .24s ease both}
+.game-message.retry{border-color:#f0d4c8;background:linear-gradient(120deg,#fff6f2,#fff);color:#80513f}
+@keyframes feedback-pop{from{opacity:0;transform:translateY(5px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+.game-route .game button:not(:disabled){transition:transform .16s ease,filter .16s ease,box-shadow .16s ease}
+.game-route .game button:not(:disabled):active{transform:scale(.98)}
+button:disabled{transform:none!important}
+@media(max-width:700px){
+  .hero{min-height:150px;flex-direction:row;text-align:left;align-items:center;padding:clamp(16px,4vw,22px);gap:8px}
+  .hero-mascot{flex-basis:clamp(74px,22vw,115px);min-height:100px}
+  .hero-logo{height:clamp(76px,20vw,108px);max-width:100%}
+  .hero-kicker{margin-bottom:7px;font-size:.62rem}
+  .hero::before{right:-100px;top:-105px}
+  .hero::after{right:27%;top:12%}
+  .subject-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding-inline:0}
+  .subject-tab{grid-template-columns:34px minmax(0,1fr) 24px;gap:7px;min-height:76px;padding:9px}
+  .subject-tab-icon{width:34px;height:34px;border-radius:11px;font-size:20px}
+  .subject-tab-copy strong{font-size:.9rem}
+  .subject-tab-copy small{font-size:.68rem}
+  .subject-tab-count{width:24px;height:24px;font-size:.7rem}
+  .card{min-height:270px;padding:16px;border-radius:20px}
+  .game-route .difficulty-picker{width:100%;justify-content:space-between}
+  .game-route .difficulty-picker select{min-width:0;flex:1 1 180px}
+  .game-message:not(:empty){padding:9px 10px}
+}
+@media(max-width:380px){
+  nav{gap:6px;padding-inline:8px}
+  .nav-brand{gap:4px;font-size:13px}
+  .nav-brand span{max-width:105px}
+  .nav-stars{min-height:30px;padding-inline:6px;font-size:11px}
+  .nav-actions{gap:4px}
+  .nav-actions button,.accessibility-menu summary{min-width:38px;min-height:38px;width:38px;height:38px}
+  .hero-kicker{font-size:.55rem;letter-spacing:.08em}
+  .hero h1{font-size:1.45rem}
+  .hero p{font-size:.82rem}
+  .hero-stars{font-size:.72rem}
+  .subject-tab{grid-template-columns:30px minmax(0,1fr);min-height:72px}
+  .subject-tab-icon{width:30px;height:30px;font-size:18px}
+  .subject-tab-count{display:none}
+}
+html[data-contrast="true"] .subject-tab,html[data-contrast="true"] .subject-tab.active,html[data-contrast="true"] .card .play-button{border:2px solid #000;background:#000;color:#fff;box-shadow:none}
+html[data-contrast="true"] .subject-tab:not(.active){background:#fff;color:#000}
+html[data-contrast="true"] .subject-tab-copy small,html[data-contrast="true"] .subject-tab-count{color:#000}
+html[data-contrast="true"] .subject-tab.active .subject-tab-copy small,html[data-contrast="true"] .subject-tab.active .subject-tab-count{color:#fff}
+html[data-contrast="true"] .card[data-area] h3,html[data-contrast="true"] .card-progress-copy span:last-child{color:#000}

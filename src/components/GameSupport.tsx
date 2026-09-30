@@ -83,7 +83,7 @@ export default function GameSupport({ path }: { path: string }) {
   if (!game) return null
 
   const difficulty = difficultyLabels[getRecommendedDifficulty(game.id)]
-  return <section className="game-support" aria-label="Ajuda para esta atividade">
+  return <section className="game-support" data-game-area={game.area} aria-label="Ajuda para esta atividade">
     <div className="game-support-actions">
       <span className="recommended-level"><span aria-hidden="true">🧭</span> Nível sugerido: <strong>{difficulty}</strong></span>
       <div className="game-support-buttons">
