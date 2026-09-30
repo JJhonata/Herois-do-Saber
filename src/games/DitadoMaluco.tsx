@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { useGameState } from '../lib/gameSession'
+import { shuffledCycleIndex } from '../lib/questionFlow'
 import { playCorrect } from '../lib/sfx'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { recordAnswer } from '../lib/review'
@@ -33,7 +34,7 @@ export default function DitadoMaluco() {
   const [text, setText] = useGameState('')
   const [speechVolume, setSpeechVolume] = useGameState(1)
   const deck = level === 'easy' ? PHRASES.slice(0, 7) : level === 'medium' ? PHRASES.slice(5, 14) : PHRASES.slice(13)
-  const fraseData = deck[idx % deck.length]
+  const fraseData = deck[shuffledCycleIndex(deck.length, idx, `dictation:${level}`)]
   const frase = fraseData.text
   const iguais = useMemo(()=> (
     [...frase].map((ch, i) => ({ ch, ok: text[i] === ch }))
@@ -90,7 +91,7 @@ export default function DitadoMaluco() {
           ))}
         </div>
         <div className="row" style={{ justifyContent: 'space-between' }}>
-          <p>{completo ? 'Excelente! 🎉' : 'Continue tentando, você consegue!'}</p>
+          <p role="status" aria-live="polite">{completo ? 'Excelente! 🎉' : 'Continue tentando, você consegue!'}</p>
           <div className="row" style={{ gap: 8 }}>
             {!completo && (
               <button className="secondary" onClick={nextPhrase}>Próximo</button>

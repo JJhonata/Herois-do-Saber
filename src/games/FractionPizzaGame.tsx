@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useGameState } from '../lib/gameSession'
+import { shuffledCycleIndex, shuffle } from '../lib/questionFlow'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
@@ -21,14 +22,14 @@ export default function FractionPizzaGame() {
   const [picked, setPicked] = useGameState<string | null>(null)
   const [message, setMessage] = useGameState('')
   const [wrongAnswer, setWrongAnswer] = useState(false)
-  const fraction = fractions[level][round % fractions[level].length]
+  const fraction = fractions[level][shuffledCycleIndex(fractions[level].length, round, `fractions:${level}`)]
   const options = useMemo(() => {
     const correct = formatFraction(fraction)
     const alternatives = Array.from({ length: 9 }, (_, index) => index + 2)
       .flatMap((denominator) => Array.from({ length: denominator - 1 }, (_, index) => ({ numerator: index + 1, denominator })))
       .filter(({ numerator, denominator }) => numerator * fraction.denominator !== fraction.numerator * denominator)
       .map(formatFraction)
-    return [correct, ...alternatives.sort(() => Math.random() - 0.5).slice(0, 3)].sort(() => Math.random() - 0.5)
+    return shuffle([correct, ...shuffle(alternatives).slice(0, 3)])
   }, [round, level, fraction])
 
   function choose(option: string) {

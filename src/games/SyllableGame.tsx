@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useGameState } from '../lib/gameSession'
+import { shuffledCycleIndex, shuffle } from '../lib/questionFlow'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
@@ -34,18 +35,14 @@ const ITEMS: Item[] = [
   { word: 'ABACAXI', emoji: '🍍', parts: ['A', 'BA', 'CA', 'XI'], missing: 3, options: ['XI', 'SI', 'CHI', 'ZI'] },
 ]
 
-function shuffled<T>(items: T[]) {
-  return [...items].sort(() => Math.random() - .5)
-}
-
 export default function SyllableGame() {
   const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('syllable'))
   const [round, setRound] = useGameState(0)
   const [score, setScore] = useGameState(0)
   const [answered, setAnswered] = useGameState<string | null>(null)
-  const deck = ITEMS.filter((candidate) => level === 'easy' ? candidate.parts.length <= 2 : level === 'medium' ? candidate.parts.length === 3 : candidate.parts.length >= 3)
-  const item = deck[round % deck.length]
-  const options = useMemo(() => shuffled(item.options), [round, level])
+  const deck = ITEMS.filter((candidate) => level === 'easy' ? candidate.parts.length <= 2 : level === 'medium' ? candidate.parts.length === 3 : candidate.parts.length >= 4)
+  const item = deck[shuffledCycleIndex(deck.length, round, `syllable:${level}`)]
+  const options = useMemo(() => shuffle(item.options), [round, level])
 
   function choose(option: string) {
     if (answered) return
@@ -73,7 +70,7 @@ export default function SyllableGame() {
       <div className="game">
         <h2>Sílaba Mágica ✨🔤</h2>
         <p>Descubra qual sílaba está faltando para completar a palavra.</p>
-        <div className="row difficulty-picker"><label htmlFor="syllable-level">Nível:</label><select id="syllable-level" value={level} onChange={event => { setLevel(event.target.value as Difficulty); setRound(0); setAnswered(null) }}><option value="easy">Começando · palavras curtas</option><option value="medium">Praticando · três sílabas</option><option value="hard">Desafio · palavras maiores</option></select></div>
+        <div className="row difficulty-picker"><label htmlFor="syllable-level">Nível:</label><select id="syllable-level" value={level} disabled={answered === item.parts[item.missing]} onChange={event => { setLevel(event.target.value as Difficulty); setRound(0); setAnswered(null) }}><option value="easy">Começando · palavras curtas</option><option value="medium">Praticando · três sílabas</option><option value="hard">Desafio · palavras maiores</option></select></div>
         <div className="row" style={{ justifyContent: 'space-between' }}>
           <span>Rodada: <strong>{round + 1}</strong></span>
           <span>Acertos: <strong>{score}</strong></span>
@@ -96,6 +93,7 @@ export default function SyllableGame() {
               <button
                 key={option}
                 className={correct ? 'accent' : wrong ? 'danger' : ''}
+                disabled={answered !== null}
                 onClick={() => choose(option)}
               >
                 {option}
@@ -103,7 +101,7 @@ export default function SyllableGame() {
             )
           })}
         </div>
-        <p style={{ minHeight: 24, textAlign: 'center', fontWeight: 700 }}>
+        <p role="status" aria-live="polite" style={{ minHeight: 24, textAlign: 'center', fontWeight: 700 }}>
           {answered === item.parts[item.missing] ? 'Muito bem! Palavra completa! 🎉' : answered ? 'Quase! Tente outra sílaba.' : 'Escolha uma sílaba.'}
         </p>
       </div>

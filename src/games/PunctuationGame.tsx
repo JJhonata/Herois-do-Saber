@@ -1,4 +1,5 @@
 import { useGameState } from '../lib/gameSession'
+import { shuffledCycleIndex } from '../lib/questionFlow'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { recordAnswer } from '../lib/review'
@@ -51,7 +52,7 @@ export default function PunctuationGame() {
   const [chosen, setChosen] = useGameState<string | null>(null)
   const [message, setMessage] = useGameState('')
   const taskList = tasks[level]
-  const taskIndex = round % taskList.length
+  const taskIndex = shuffledCycleIndex(taskList.length, round, `punctuation:${level}`)
   const task = taskList[taskIndex]
   const options = level === 'easy' ? [',', '.'] : [',', '.', '?']
   const correct = chosen === task.mark

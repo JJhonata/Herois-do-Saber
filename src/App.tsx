@@ -6,6 +6,7 @@ import { gameCatalog } from './lib/gameCatalog'
 import { getStars } from './lib/progress'
 import { setLastPlayedGame } from './lib/progress'
 import GameSupport from './components/GameSupport'
+import GameErrorBoundary from './components/GameErrorBoundary'
 import { GameSession } from './lib/gameSession'
 
 function GamePhase({ path }: { path: string }) {
@@ -43,13 +44,15 @@ export default function App() {
         <GameSupport path={location.pathname} />
       </>}
       <main id="main-content" className={`route-transition${activeGame ? ' game-route' : ''}`} data-game-area={activeGame?.area} key={location.pathname} tabIndex={-1}>
-        <Suspense fallback={<div className="container" role="status">Carregando jogo…</div>}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            {gameCatalog.map(({ id, path, component: Game }) => <Route key={id} path={path} element={<GameSession gameId={id}><Game /></GameSession>} />)}
-            <Route path="*" element={<Home />} />
-          </Routes>
-        </Suspense>
+        <GameErrorBoundary key={location.pathname}>
+          <Suspense fallback={<div className="container game-loading" role="status"><span className="loading-spinner" aria-hidden="true" />Carregando atividade…</div>}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              {gameCatalog.map(({ id, path, component: Game }) => <Route key={id} path={path} element={<GameSession gameId={id}><Game /></GameSession>} />)}
+              <Route path="*" element={<Home />} />
+            </Routes>
+          </Suspense>
+        </GameErrorBoundary>
       </main>
     </>
   )

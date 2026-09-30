@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useGameState } from '../lib/gameSession'
+import { shuffledCycleIndex, shuffle } from '../lib/questionFlow'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { recordAnswer } from '../lib/review'
@@ -29,8 +30,6 @@ function getDirection(place: Place): Direction {
   return horizontal > 0 ? 'Sudeste' : 'Sudoeste'
 }
 
-function shuffle<T>(items: T[]) { return [...items].sort(() => Math.random() - 0.5) }
-
 export default function MapMissionGame() {
   const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('map'))
   const [round, setRound] = useGameState(0)
@@ -39,7 +38,7 @@ export default function MapMissionGame() {
   const [wrongAnswer, setWrongAnswer] = useState(false)
   const availableDirections = level === 'easy' ? directions.slice(0, 2) : level === 'medium' ? directions.slice(0, 4) : directions
   const targets = places.filter((place) => place.name !== 'Escola' && availableDirections.includes(getDirection(place)))
-  const target = targets[round % targets.length]
+  const target = targets[shuffledCycleIndex(targets.length, round, `map:${level}`)]
   const expected = getDirection(target)
   const options = useMemo(() => shuffle(availableDirections), [round, level])
 

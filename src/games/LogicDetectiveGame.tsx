@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useGameState } from '../lib/gameSession'
+import { shuffledCycleIndex, shuffle } from '../lib/questionFlow'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
@@ -45,15 +46,13 @@ const puzzles: Record<Difficulty, Puzzle[]> = {
   ],
 }
 
-function shuffle<T>(items: T[]) { return [...items].sort(() => Math.random() - 0.5) }
-
 export default function LogicDetectiveGame() {
   const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('logic'))
   const [round, setRound] = useGameState(0)
   const [picked, setPicked] = useGameState<string | null>(null)
   const [message, setMessage] = useGameState('')
   const puzzleList = puzzles[level]
-  const puzzleIndex = round % puzzleList.length
+  const puzzleIndex = shuffledCycleIndex(puzzleList.length, round, `logic:${level}`)
   const puzzle = puzzleList[puzzleIndex]
   const options = useMemo(() => shuffle(puzzle.options), [level, round])
   const correct = picked === puzzle.answer

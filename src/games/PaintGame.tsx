@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useGameState } from '../lib/gameSession'
 import { addStars } from '../lib/progress'
 
@@ -17,6 +17,7 @@ export default function PaintGame() {
   const [rewarded, setRewarded] = useGameState(false)
   const [tool, setTool] = useGameState<'brush' | 'eraser' | 'picker' | 'fill' | 'line' | 'rect' | 'circle'>('brush')
   const [canvasData, setCanvasData] = useGameState<string | null>(null)
+  const [saveMessage, setSaveMessage] = useState('')
   const shapeStartRef = useRef<{ x: number, y: number } | null>(null)
 
   useEffect(() => {
@@ -161,6 +162,7 @@ export default function PaintGame() {
     a.href = dataUrl
     a.download = 'minha-pintura.png'
     a.click()
+    setSaveMessage('Sua arte foi baixada como minha-pintura.png.')
     if (hasArtwork && !rewarded) {
       addStars('paint', 1)
       setRewarded(true)
@@ -261,6 +263,7 @@ export default function PaintGame() {
               <button type="button" className="secondary" onClick={clearCanvas}>Limpar</button>
               <button type="button" className="accent" onClick={saveImage} disabled={!hasArtwork}>Salvar</button>
             </div>
+            <p className="sr-only" role="status" aria-live="polite">{saveMessage}</p>
           </div>
           <div className="paint-canvas-wrap">
             <canvas

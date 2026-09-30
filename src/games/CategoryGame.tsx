@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useGameState } from '../lib/gameSession'
+import { shuffledCycleIndex, shuffle } from '../lib/questionFlow'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
@@ -57,10 +58,9 @@ export default function CategoryGame() {
   const [round, setRound] = useGameState(0)
   const [score, setScore] = useGameState(0)
   const [picked, setPicked] = useGameState<Category | null>(null)
-  const [itemOrder] = useGameState(() => ITEMS.map((_, index) => index).sort(() => Math.random() - .5))
-  const item = useMemo(() => ITEMS[itemOrder[round % itemOrder.length]], [round, itemOrder])
+  const item = useMemo(() => ITEMS[shuffledCycleIndex(ITEMS.length, round, 'category')], [round])
   const optionCount = level === 'easy' ? 2 : level === 'medium' ? 3 : CATEGORIES.length
-  const options = useMemo(() => [item.category, ...CATEGORIES.filter(category => category !== item.category).sort(() => Math.random() - .5).slice(0, optionCount - 1)].sort(() => Math.random() - .5), [round, level])
+  const options = useMemo(() => shuffle([item.category, ...shuffle(CATEGORIES.filter(category => category !== item.category)).slice(0, optionCount - 1)]), [round, level])
 
   function choose(category: Category) {
     if (picked !== null) return
@@ -84,7 +84,7 @@ export default function CategoryGame() {
       <div className="game">
         <h2>Qual é a Categoria? 📚</h2>
         <p>Observe a palavra e escolha o grupo ao qual ela pertence.</p>
-        <div className="row difficulty-picker"><label htmlFor="category-level">Nível:</label><select id="category-level" value={level} onChange={event => { setLevel(event.target.value as Difficulty); setRound(0); setPicked(null); setScore(0) }}><option value="easy">Começando · 2 opções</option><option value="medium">Praticando · 3 opções</option><option value="hard">Desafio · 4 opções</option></select></div>
+        <div className="row difficulty-picker"><label htmlFor="category-level">Nível:</label><select id="category-level" value={level} disabled={picked === item.category} onChange={event => { setLevel(event.target.value as Difficulty); setRound(0); setPicked(null); setScore(0) }}><option value="easy">Começando · 2 opções</option><option value="medium">Praticando · 3 opções</option><option value="hard">Desafio · 4 opções</option></select></div>
         <div className="row" style={{ justifyContent: 'space-between' }}>
           <span>Rodada: <strong>{round + 1}</strong></span>
           <span>Acertos: <strong>{score}</strong></span>
@@ -97,6 +97,7 @@ export default function CategoryGame() {
           {options.map(category => (
             <button
               key={category}
+              disabled={picked !== null}
               className={picked !== null && category === item.category ? 'accent' : picked === category ? 'danger' : ''}
               onClick={() => choose(category)}
             >
@@ -104,7 +105,7 @@ export default function CategoryGame() {
             </button>
           ))}
         </div>
-        <p style={{ minHeight: 24, textAlign: 'center', fontWeight: 700 }}>
+        <p role="status" aria-live="polite" style={{ minHeight: 24, textAlign: 'center', fontWeight: 700 }}>
           {picked === item.category ? 'Classificação correta! 🌟' : picked ? 'Pense no que essa palavra representa e tente novamente.' : ''}
         </p>
       </div>

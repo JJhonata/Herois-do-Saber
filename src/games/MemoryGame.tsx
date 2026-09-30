@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useGameState } from '../lib/gameSession'
+import { shuffle } from '../lib/questionFlow'
 import { playCorrect } from '../lib/sfx'
 import { addStars, getRecommendedDifficulty } from '../lib/progress'
 import { recordAnswer } from '../lib/review'
@@ -32,7 +33,7 @@ export default function MemoryGame() {
 
   const pairs = useMemo(()=> (size.cols * size.rows) / 2, [size])
   const symbols = useMemo(()=> THEMES[theme].slice(0, pairs), [theme, pairs])
-  const makeDeck = () => [...symbols, ...symbols].sort(()=> Math.random()-0.5).map(s => ({ symbol: s, flipped:false, matched:false } as Card))
+  const makeDeck = () => shuffle([...symbols, ...symbols]).map(s => ({ symbol: s, flipped:false, matched:false } as Card))
 
   const [cards, setCards] = useGameState<Card[]>(makeDeck())
   const [openIdxs, setOpenIdxs] = useGameState<number[]>([])
@@ -92,38 +93,42 @@ export default function MemoryGame() {
   return (
     <div className="container">
       <div className="game">
-        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="row memory-header">
           <h2>Memória 🧠</h2>
-          <div className="row" style={{ gap: 8 }}>
-            <label>Tema:</label>
-            <select value={theme} onChange={e=> setTheme(e.target.value as Theme)}>
+          <div className="memory-settings">
+            <div className="memory-setting"><label htmlFor="memory-theme">Tema:</label>
+              <select id="memory-theme" value={theme} onChange={e=> setTheme(e.target.value as Theme)}>
               <option value="frutas">Frutas</option>
               <option value="animais">Animais</option>
               <option value="emojis">Emojis</option>
               <option value="veiculos">Veículos</option>
               <option value="escola">Escola</option>
               <option value="natureza">Natureza</option>
-            </select>
-            <label style={{ marginLeft: 8 }}>Tamanho:</label>
-            <select value={size.label} onChange={e=> setSize(SIZES.find(s=>s.label===e.target.value) || SIZES[1])}>
-              {SIZES.map(s => <option key={s.label} value={s.label}>{s.label}</option>)}
-            </select>
+              </select>
+            </div>
+            <div className="memory-setting"><label htmlFor="memory-size">Tamanho:</label>
+              <select id="memory-size" value={size.label} onChange={e=> setSize(SIZES.find(s=>s.label===e.target.value) || SIZES[1])}>
+                {SIZES.map(s => <option key={s.label} value={s.label}>{s.label}</option>)}
+              </select>
+            </div>
           </div>
         </div>
-        <p>Pares encontrados: <strong>{score}</strong> / {pairs}</p>
-        <div className="flip-grid" style={{ gridTemplateColumns: `repeat(${size.cols}, minmax(72px, 96px))` }}>
+        <p role="status" aria-live="polite">Pares encontrados: <strong>{score}</strong> / {pairs}</p>
+        <div className="flip-grid" style={{ gridTemplateColumns: `repeat(${size.cols}, minmax(0, 1fr))`, maxWidth: `${size.cols * 96 + (size.cols - 1) * 12}px` }}>
           {cards.map((c,i)=> (
             <button key={i} type="button" className="flip-card" onClick={()=>flip(i)} disabled={locked || c.matched} aria-pressed={c.flipped || c.matched} aria-label={`${c.flipped || c.matched ? c.symbol : 'Carta fechada'}, posição ${i + 1}${c.matched ? ', par encontrado' : ''}`}>
-              <div className={`flip-inner ${c.flipped || c.matched ? 'flipped' : ''}`}>
-                <div className="flip-face flip-front">❓</div>
-                <div className="flip-face flip-back" style={{ fontSize: 28 }}>{c.symbol}</div>
+                <div className={`flip-inner ${c.flipped || c.matched ? 'flipped' : ''}`}>
+                  <div className="flip-face flip-front" aria-hidden={c.flipped || c.matched}>❓</div>
+                  <div className="flip-face flip-back" aria-hidden={!c.flipped && !c.matched} style={{ fontSize: 28 }}>
+                    {c.flipped || c.matched ? c.symbol : null}
+                  </div>
               </div>
             </button>
           ))}
         </div>
         <div className="row" style={{ marginTop: 12 }}>
           <button className="secondary" onClick={restart}>Reiniciar</button>
-          {completed && <span>Parabéns! 🎉</span>}
+          <span role="status" aria-live="polite">{completed ? 'Parabéns! 🎉 Você encontrou todos os pares.' : ''}</span>
         </div>
       </div>
     </div>

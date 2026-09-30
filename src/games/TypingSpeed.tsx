@@ -3,6 +3,7 @@ import { useGameState } from '../lib/gameSession'
 import { playCorrect } from '../lib/sfx'
 import { addStars } from '../lib/progress'
 import { recordAnswer } from '../lib/review'
+import { shuffle } from '../lib/questionFlow'
 
 type Level = 'facil' | 'medio' | 'dificil'
 const BANK: Record<Level, string[]> = {
@@ -95,13 +96,17 @@ export default function TypingSpeed() {
 
   useEffect(()=>{ if (!initializedPhrases.current) { initializedPhrases.current = true; return }; setTarget(phrases[0]); setText(''); setSeconds(0); setStarted(false); setAwarded(false) }, [phrases])
 
-  const complete = text === target
+  const complete = target.length > 0 && text === target
+
+  function nextPhrase() {
+    const alternatives = phrases.filter((phrase) => phrase !== target)
+    setTarget(shuffle(alternatives)[0] || target)
+  }
 
   useEffect(() => {
     if (practice || !complete) return
     const timeout = window.setTimeout(() => {
-      const index = phrases.indexOf(target)
-      setTarget(phrases[index < 0 || index + 1 >= phrases.length ? 0 : index + 1])
+      nextPhrase()
       setText('')
       setSeconds(0)
       setStarted(false)
@@ -131,7 +136,7 @@ export default function TypingSpeed() {
     if (practice) {
       setTarget(custom)
     } else {
-      setTarget(phrases[Math.floor(Math.random()*phrases.length)])
+      nextPhrase()
     }
   }
 
@@ -140,14 +145,14 @@ export default function TypingSpeed() {
       <div className="game">
         <h2>Digitação ⌨️</h2>
         <div className="row" style={{ alignItems: 'center' }}>
-          <label>Nível:</label>
-          <select value={level} onChange={e=> setLevel(e.target.value as Level)}>
+          <label htmlFor="typing-level">Nível:</label>
+          <select id="typing-level" value={level} disabled={complete && !practice} onChange={e=> setLevel(e.target.value as Level)}>
             <option value="facil">Fácil</option>
             <option value="medio">Médio</option>
             <option value="dificil">Difícil</option>
           </select>
-          <label style={{ marginLeft: 12 }}>Prática livre:</label>
-          <select value={String(practice)} onChange={e=> { const v = e.target.value==='true'; setPractice(v); if (v) setTarget(custom); else setTarget(phrases[0]); setText(''); setSeconds(0); setStarted(false); setAwarded(false) }}>
+          <label style={{ marginLeft: 12 }} htmlFor="typing-practice">Prática livre:</label>
+          <select id="typing-practice" value={String(practice)} onChange={e=> { const v = e.target.value==='true'; setPractice(v); if (v) setTarget(custom); else setTarget(phrases[0]); setText(''); setSeconds(0); setStarted(false); setAwarded(false) }}>
             <option value="false">Não</option>
             <option value="true">Sim</option>
           </select>
@@ -156,8 +161,8 @@ export default function TypingSpeed() {
         <div style={{ height: 8 }} />
         {practice ? (
           <div className="row" style={{ alignItems: 'center', gap: 8 }}>
-            <label style={{ whiteSpace: 'nowrap' }}>Texto da prática:</label>
-            <input style={{ flex: 1 }} value={custom} onChange={e=> { setCustom(e.target.value); if (practice) setTarget(e.target.value) }} />
+            <label style={{ whiteSpace: 'nowrap' }} htmlFor="typing-custom-text">Texto da prática:</label>
+            <input id="typing-custom-text" style={{ flex: 1 }} value={custom} onChange={e=> { setCustom(e.target.value); if (practice) setTarget(e.target.value) }} />
           </div>
         ) : null}
         <p>Digite a frase:</p>
@@ -165,10 +170,11 @@ export default function TypingSpeed() {
         <div className="row">
           <button onClick={()=>{ setStarted(true); setText(''); setSeconds(0); setAwarded(false) }} className="accent">Iniciar</button>
           <button onClick={restart} className="secondary">Reiniciar</button>
-          {!practice && <button className="secondary" onClick={()=> { setTarget(phrases[Math.floor(Math.random()*phrases.length)]); setText(''); setSeconds(0); setStarted(false); setAwarded(false) }}>Próxima frase</button>}
+          {!practice && <button className="secondary" onClick={()=> { nextPhrase(); setText(''); setSeconds(0); setStarted(false); setAwarded(false) }}>Próxima frase</button>}
         </div>
-        <textarea rows={4} value={text} onChange={e=>setText(e.target.value)} style={{ width: '100%', marginTop: 8 }} />
-        <p>{complete ? 'Perfeito! 🎉' : 'Continue, você está indo bem!'}</p>
+        <label className="visually-hidden" htmlFor="typing-answer">Digite a frase mostrada</label>
+        <textarea id="typing-answer" rows={4} value={text} onChange={e=>setText(e.target.value)} style={{ width: '100%', marginTop: 8 }} />
+        <p role="status" aria-live="polite">{!target.length ? 'Digite um texto para praticar.' : complete ? 'Perfeito! 🎉' : 'Continue, você está indo bem!'}</p>
       </div>
     </div>
   )

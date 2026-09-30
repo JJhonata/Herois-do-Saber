@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useGameState } from '../lib/gameSession'
+import { shuffledCycleIndex, shuffle } from '../lib/questionFlow'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { recordAnswer } from '../lib/review'
@@ -39,8 +40,6 @@ function speak(word: string) {
   return true
 }
 
-function shuffle<T>(items: T[]) { return [...items].sort(() => Math.random() - 0.5) }
-
 export default function EnglishPocketGame() {
   const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('english'))
   const [round, setRound] = useGameState(0)
@@ -49,7 +48,7 @@ export default function EnglishPocketGame() {
   const [feedback, setFeedback] = useState('')
   const [voiceMessage, setVoiceMessage] = useState('')
   const wordList = words[level]
-  const wordIndex = round % wordList.length
+  const wordIndex = shuffledCycleIndex(wordList.length, round, `english:${level}`)
   const word = wordList[wordIndex]
   const optionCount = level === 'easy' ? 2 : level === 'medium' ? 3 : 4
   const options = useMemo(() => shuffle([word, ...shuffle(wordList.filter((item) => item.word !== word.word)).slice(0, optionCount - 1)]), [round, level])

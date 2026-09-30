@@ -103,14 +103,19 @@ input:focus, textarea:focus, select:focus { outline: 3px solid rgba(91,141,239,.
 .paint-canvas { width: 100%; height: 100%; border-radius: 16px; }
 
 /* Flip cards (Memória) */
-.flip-grid { display: grid; gap: 18px; justify-content: center; }
-.flip-card { perspective: 800px; background: transparent; padding: 0; border: 0; box-shadow: none; min-width: 0; }
+.flip-grid { display: grid; width: 100%; gap: 12px; justify-content: center; margin-inline: auto; }
+.flip-card { display: grid; place-items: center; width: 100%; aspect-ratio: 1; perspective: 800px; background: transparent; padding: 0; border: 0; box-shadow: none; min-width: 0; }
 .flip-card:hover { filter: none; transform: none; box-shadow: none; }
-.flip-inner { position: relative; width: 100%; padding-top: 100%; max-width: 96px; max-height: 96px; transform-style: preserve-3d; transition: transform .45s ease; }
+.flip-inner { position: relative; width: min(100%, 96px); aspect-ratio: 1; margin: auto; transform-style: preserve-3d; transition: transform .45s ease; }
 .flip-inner.flipped { transform: rotateY(180deg); }
 .flip-face { position: absolute; inset: 0; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border-radius: 12px; border: 1px solid #e6ecf5; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
 .flip-front { background: #f0f4ff; }
 .flip-back { background: #fff; transform: rotateY(180deg); font-size: 34px; }
+.memory-header { justify-content: space-between; align-items: center; gap: 12px; }
+.memory-header > h2 { margin: 0; }
+.memory-settings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: min(100%, 460px); }
+.memory-setting { display: grid; gap: 5px; min-width: 0; color: #5c5471; font-size: .9rem; font-weight: 800; }
+.memory-setting select { width: 100%; min-width: 0; padding: 9px 10px; font-size: .95rem; }
 
 /* Responsividade */
 @media (max-width: 700px) {
@@ -125,11 +130,23 @@ input:focus, textarea:focus, select:focus { outline: 3px solid rgba(91,141,239,.
 }
 @media (max-width: 480px) {
   :root { --card-size: 72px; }
-  .flip-grid { gap: 12px; }
+  .flip-grid { gap: 8px; max-width: 100% !important; }
+  .memory-header { align-items: stretch; }
+  .memory-settings { width: 100%; }
   .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
   button { font-size: 16px; padding: 12px 14px; }
   .home-link { padding: 6px 10px; border-width: 1.5px; box-shadow: 0 1px 0 rgba(0,0,0,.06); }
   .home-link:hover { box-shadow: 0 3px 8px rgba(0,0,0,.12), 0 0 8px rgba(255,255,255,.3); animation: none; }
+}
+/* Desembaralhar: ações e campo alinhados sem quebras irregulares no celular */
+.scramble-answer { display: block; width: min(100%, 420px); min-height: 52px; margin: 12px auto; text-align: center; font-size: 1.15rem; }
+.scramble-actions { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; align-items: center; justify-content: center; gap: 10px; max-width: 740px; margin: 14px auto 0; }
+.scramble-actions > button { min-width: 0; min-height: 52px; white-space: nowrap; }
+.scramble-tries { color: #5c5471; font-weight: 700; white-space: nowrap; }
+@media (max-width: 520px) {
+  .scramble-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; gap: 8px; }
+  .scramble-actions > button { padding-inline: 8px; font-size: 1rem; }
+  .scramble-tries { grid-column: 1 / -1; padding: 4px 0; text-align: center; }
 }
 @media (max-width: 360px) {
   :root { --card-size: 64px; }
@@ -260,7 +277,7 @@ button:disabled { cursor: not-allowed; opacity: .58; transform: none; filter: no
 }
 
 html, body, #root { min-height: 100%; height: auto; }
-body { min-width: 320px; }
+body { min-width: 0; }
 .container { width: min(100%, 1200px); padding: clamp(12px, 2.5vw, 24px); }
 h1 { font-size: clamp(2rem, 5vw, 2.75rem); line-height: 1.08; }
 h2 { font-size: clamp(1.5rem, 3.5vw, 1.9rem); line-height: 1.15; }
@@ -777,6 +794,7 @@ html[data-contrast="true"] .profile-setup,html[data-contrast="true"] .profile-op
 .game-route[data-game-area="Raciocínio"]{--game-accent:#694aa6;--game-wash:#f7f4ff}
 .game-route[data-game-area="Tecnologia"]{--game-accent:#435ba1;--game-wash:#f3f5ff}
 .game-route[data-game-area="Criatividade"]{--game-accent:#a64284;--game-wash:#fff5fb}
+.game-route[data-game-area]{--primary:var(--game-accent)}
 .game-route .game{position:relative;overflow:hidden;border-top:5px solid var(--game-accent,#7351c8);background:linear-gradient(180deg,var(--game-wash,#f8f6ff),#fff 230px);box-shadow:0 12px 30px rgba(45,31,89,.09)}
 .game-route .game>h2{margin-bottom:8px;color:#302950;font-size:clamp(1.55rem,3.8vw,2.05rem);line-height:1.16;text-wrap:balance}
 .game-route .game>p:first-of-type{color:#5c5471}
@@ -790,6 +808,26 @@ html[data-contrast="true"] .profile-setup,html[data-contrast="true"] .profile-op
 .game-route .game button:not(:disabled){transition:transform .16s ease,filter .16s ease,box-shadow .16s ease}
 .game-route .game button:not(:disabled):active{transform:scale(.98)}
 button:disabled{transform:none!important}
+.game-route,.game-route .container,.game-route .game{min-width:0;max-width:100%}
+.game-route .game{border-color:color-mix(in srgb,var(--game-accent,#7351c8) 22%,white)}
+.game-route .game>h2{color:var(--game-accent,#302950)}
+.game-route .difficulty-picker select:focus,.game-route input:focus,.game-route textarea:focus{outline-color:color-mix(in srgb,var(--game-accent,#7351c8) 30%,transparent);border-color:var(--game-accent,#7351c8)}
+.game-loading,.game-load-error{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:clamp(260px,55vh,520px);text-align:center}
+.game-loading{color:#5c5471;font-weight:800}
+.loading-spinner{width:36px;height:36px;border:4px solid #e7e2f2;border-top-color:var(--primary);border-radius:50%;animation:loading-spin .8s linear infinite}
+@keyframes loading-spin{to{transform:rotate(360deg)}}
+.game-load-error{max-width:620px;margin:24px auto;padding:clamp(20px,5vw,36px);border:1px solid #f1d8cd;border-radius:24px;background:linear-gradient(145deg,#fff8f4,#fff);box-shadow:0 12px 30px rgba(45,31,89,.08)}
+.game-load-error>span{font-size:2.6rem}
+.game-load-error h1{margin:0;font-size:clamp(1.5rem,5vw,2.2rem);line-height:1.15}
+.game-load-error p{max-width:42ch;margin:0;color:#5c5471}
+.game-load-actions{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;margin-top:4px}
+.game-load-home{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:10px 16px;border:1px solid #ded8ec;border-radius:14px;background:#fff;color:#493a70;font-weight:800;text-decoration:none}
+.game-load-home:hover{border-color:#9c8bc5;background:#faf8ff}
+@media(max-width:520px){.game-load-error{margin:12px;padding:22px 16px}.game-load-actions{width:100%}.game-load-actions>*{flex:1 1 180px}}
+@media(prefers-reduced-motion:reduce){.loading-spinner{animation-duration:2s}.game-loading,.game-load-error{scroll-behavior:auto}}
+html[data-contrast="true"] .game-route[data-game-area]{--primary:#000}
+html[data-contrast="true"] .game-route .game{border:2px solid #000;border-top-width:5px;background:#fff}
+html[data-contrast="true"] .game-route .game>h2,html[data-contrast="true"] .game-route .difficulty-picker label{color:#000}
 @media(max-width:700px){
   .hero{min-height:150px;flex-direction:row;text-align:left;align-items:center;padding:clamp(16px,4vw,22px);gap:8px}
   .hero-mascot{flex-basis:clamp(74px,22vw,115px);min-height:100px}

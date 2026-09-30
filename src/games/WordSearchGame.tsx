@@ -32,6 +32,7 @@ function makePuzzle(gridSize: number, difficulty: Difficulty): Puzzle {
   const grid: (string | null)[][] = Array.from({ length: gridSize }, () => Array(gridSize).fill(null))
   const wordCount = difficulty === 'easy' ? 4 : difficulty === 'medium' ? 6 : WORDS.length
   const words = shuffle(WORDS).slice(0, wordCount)
+  const placedWords: string[] = []
 
   for (const word of words) {
     let placed = false
@@ -49,12 +50,13 @@ function makePuzzle(gridSize: number, difficulty: Difficulty): Puzzle {
       path.forEach(({ letter, row, col }) => { grid[row][col] = letter })
       placed = true
     }
+    if (placed) placedWords.push(word)
   }
 
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
   return {
     grid: grid.map((row) => row.map((letter) => letter ?? letters[Math.floor(Math.random() * letters.length)])),
-    words,
+    words: placedWords,
   }
 }
 
@@ -96,7 +98,7 @@ export default function WordSearchGame() {
   }
 
   function chooseCell(index: number) {
-    if (complete || foundCells.includes(index) || !target) return
+    if (complete || !target) return
 
     const size = puzzle.grid.length
     const row = Math.floor(index / size)
@@ -175,7 +177,7 @@ export default function WordSearchGame() {
         const col = index % gridSize
         const found = foundCells.includes(index)
         const selected = selection.includes(index)
-        return <button type="button" key={index} className={`word-cell${found ? ' found' : selected ? ' selected' : ''}`} disabled={found || complete} aria-pressed={selected || found} aria-label={`Linha ${row + 1}, coluna ${col + 1}, letra ${letter}${found ? ', palavra encontrada' : ''}`} onPointerDown={(event) => { event.preventDefault(); pointerSelecting.current = true; lastPointerAt.current = Date.now(); chooseCell(index) }} onPointerEnter={() => { if (pointerSelecting.current) { lastPointerAt.current = Date.now(); chooseCell(index) } }} onClick={(event) => { if (event.detail === 0 || Date.now() - lastPointerAt.current > 500) chooseCell(index) }}>{letter}</button>
+        return <button type="button" key={index} className={`word-cell${found ? ' found' : selected ? ' selected' : ''}`} disabled={complete} aria-pressed={selected} aria-label={`Linha ${row + 1}, coluna ${col + 1}, letra ${letter}${found ? ', parte de palavra encontrada' : ''}`} onPointerDown={(event) => { event.preventDefault(); pointerSelecting.current = true; lastPointerAt.current = Date.now(); chooseCell(index) }} onPointerEnter={() => { if (pointerSelecting.current) { lastPointerAt.current = Date.now(); chooseCell(index) } }} onClick={(event) => { if (event.detail === 0 || Date.now() - lastPointerAt.current > 500) chooseCell(index) }}>{letter}</button>
       })}
     </div>
     <div className="row" style={{ justifyContent: 'center' }}>

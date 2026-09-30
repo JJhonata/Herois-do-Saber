@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useGameState } from '../lib/gameSession'
+import { shuffledCycleIndex, shuffle } from '../lib/questionFlow'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { recordAnswer } from '../lib/review'
@@ -23,12 +24,11 @@ const ITEMS = [
   'Hoje aprendemos uma palavra nova',
   'A lua aparece brilhante no céu',
 ]
-const shuffle = <T,>(a:T[]) => [...a].sort(()=>Math.random()-.5)
 
 export default function SentenceBuilder(){
   const [level,setLevel]=useGameState<Difficulty>(()=>getRecommendedDifficulty('sentence')); const [round,setRound]=useGameState(0); const [picked,setPicked]=useGameState<string[]>([]); const [msg,setMsg]=useGameState(''); const [solved,setSolved]=useGameState(false)
   const deck=ITEMS.filter(sentence=>level==='easy'?sentence.split(' ').length<=5:level==='medium'?sentence.split(' ').length===6:sentence.split(' ').length>=7)
-  const sentence=deck[round%deck.length]
+  const sentence=deck[shuffledCycleIndex(deck.length,round,`sentence:${level}`)]
   const words=useMemo(()=>shuffle(sentence.split(' ')),[round,level])
   const available=words.filter((_,i)=>!picked.includes(`${i}`))
   function choose(word:string){

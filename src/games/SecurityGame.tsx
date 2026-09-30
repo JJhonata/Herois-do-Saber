@@ -79,18 +79,19 @@ export default function SecurityGame() {
     <div className="container">
       <div className="game">
         <h2>Segurança Online 🔐</h2>
-        <div className="row difficulty-picker"><label htmlFor="security-level">Nível:</label><select id="security-level" value={level} onChange={event => { setLevel(event.target.value as Difficulty); setChosen(null) }}><option value="easy">Começando · 2 opções</option><option value="medium">Praticando · 3 opções</option><option value="hard">Desafio · 4 opções</option></select></div>
+        <div className="row difficulty-picker"><label htmlFor="security-level">Nível:</label><select id="security-level" value={level} disabled={chosen === q.correct} onChange={event => { setLevel(event.target.value as Difficulty); setChosen(null) }}><option value="easy">Começando · 2 opções</option><option value="medium">Praticando · 3 opções</option><option value="hard">Desafio · 4 opções</option></select></div>
         {!finished ? (
           <>
             <p>Pergunta {i+1} de {SAFETY_QUESTIONS.length} — Pontos: <strong>{score}</strong></p>
             <p style={{ fontSize: 18 }}>{q.q}</p>
             <div className="row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 8 }}>
               {visibleOptions.map(({ text: opt, index: idx }) => (
-                <button key={idx} onClick={()=>pick(idx)} className={chosen===idx ? (idx===q.correct ? 'accent' : 'danger') : ''}>
+                <button key={idx} disabled={chosen !== null} onClick={()=>pick(idx)} className={chosen===idx ? (idx===q.correct ? 'accent' : 'danger') : ''}>
                   {String.fromCharCode(65+idx)}. {opt}
                 </button>
               ))}
             </div>
+            <p className="game-message" role="status" aria-live="polite">{chosen === null ? '' : chosen === q.correct ? 'Resposta certa! 🌟' : 'Essa resposta não é segura. Reveja as opções ou avance para a próxima pergunta.'}</p>
             {chosen !== null && chosen !== q.correct && (
               <div className="row" style={{ marginTop: 10 }}>
                 <button className="secondary" onClick={next}>Próxima</button>

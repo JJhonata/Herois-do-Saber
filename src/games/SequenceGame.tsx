@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useGameState } from '../lib/gameSession'
+import { shuffledCycleIndex, shuffle } from '../lib/questionFlow'
 import { addStars, getRecommendedDifficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
@@ -7,8 +8,6 @@ import { recordAnswer } from '../lib/review'
 
 type Level = 'easy' | 'medium' | 'hard'
 type Question = { values: number[]; answer: number; options: number[]; clue: string }
-
-function shuffle<T>(items: T[]) { return [...items].sort(() => Math.random() - .5) }
 
 function buildQuestion(level: Level, seed: number): Question {
   const bases = {
@@ -34,7 +33,7 @@ function buildQuestion(level: Level, seed: number): Question {
       { start: 11, step: 11, clue: 'Observe o salto constante' },
     ],
   }[level]
-  const model = bases[seed % bases.length]
+  const model = bases[shuffledCycleIndex(bases.length, seed, `sequence:${level}`)]
   const values = Array.from({ length: 4 }, (_, i) => model.start + model.step * i)
   const answer = model.start + model.step * 4
   const distance = Math.max(1, Math.abs(model.step))
@@ -73,8 +72,8 @@ export default function SequenceGame() {
         <h2>Sequência dos Heróis 🧩</h2>
         <p>Descubra qual número vem depois.</p>
         <div className="row">
-          <label>Nível:</label>
-          <select value={level} onChange={e => { setLevel(e.target.value as Level); setRound(0); setPicked(null) }}>
+          <label htmlFor="sequence-level">Nível:</label>
+          <select id="sequence-level" value={level} onChange={e => { setLevel(e.target.value as Level); setRound(0); setPicked(null); setScore(0) }}>
             <option value="easy">Fácil</option>
             <option value="medium">Médio</option>
             <option value="hard">Difícil</option>
@@ -90,6 +89,7 @@ export default function SequenceGame() {
           {question.options.map(option => (
             <button
               key={option}
+              disabled={picked !== null}
               className={picked !== null && option === question.answer ? 'accent' : picked === option ? 'danger' : ''}
               onClick={() => choose(option)}
             >
@@ -97,7 +97,7 @@ export default function SequenceGame() {
             </button>
           ))}
         </div>
-        <p style={{ minHeight: 24, textAlign: 'center', fontWeight: 700 }}>
+        <p role="status" aria-live="polite" style={{ minHeight: 24, textAlign: 'center', fontWeight: 700 }}>
           {picked === question.answer ? 'Sequência descoberta! ⭐' : picked !== null ? 'Observe a diferença e tente outra vez.' : ''}
         </p>
       </div>

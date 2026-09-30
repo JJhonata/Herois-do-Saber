@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useGameState } from '../lib/gameSession'
+import { shuffledCycleIndex, shuffle } from '../lib/questionFlow'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
@@ -24,8 +25,6 @@ const cycles: Record<Difficulty, Cycle[]> = {
   ],
 }
 
-function shuffle<T>(items: T[]) { return [...items].sort(() => Math.random() - 0.5) }
-
 export default function HabitatCycleGame() {
   const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('nature'))
   const [round, setRound] = useGameState(0)
@@ -33,7 +32,7 @@ export default function HabitatCycleGame() {
   const [, setMessage] = useGameState('')
   const [completed, setCompleted] = useGameState(false)
   const [selected, setSelected] = useGameState<string | null>(null)
-  const cycle = cycles[level][round % cycles[level].length]
+  const cycle = cycles[level][shuffledCycleIndex(cycles[level].length, round, `nature:${level}`)]
   const firstWrongIndex = savedSteps.findIndex((step, index) => step !== cycle.steps[index])
   const stepIndex = Math.min(cycle.steps.length - 1, firstWrongIndex === -1 ? savedSteps.length : firstWrongIndex)
   const sequence = cycle.steps.slice(0, stepIndex)

@@ -1,9 +1,10 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useGameState } from '../lib/gameSession'
 import { playBonus, playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
 import { addStars, getRecommendedDifficulty } from '../lib/progress'
 import { recordAnswer } from '../lib/review'
+import { shuffle } from '../lib/questionFlow'
 
 type Level = 1 | 2 | 3 | 4 | 5
 type Op = 'add' | 'sub' | 'mul' | 'div' | 'mix'
@@ -26,7 +27,7 @@ function buildOptions(correct: number, op: Exclude<Op, 'mix'>) {
     if (candidate >= 0) options.add(candidate)
     i++
   }
-  return Array.from(options).slice(0,4).sort(()=> Math.random()-0.5)
+  return shuffle(Array.from(options).slice(0,4))
 }
 function buildQuestion(level: Level, op: Op) {
   const chosen = pickOp(op)
@@ -56,7 +57,17 @@ export default function MathGame() {
   const [op, setOp] = useGameState<Op>('add')
   const [score, setScore] = useGameState(0)
   const [round, setRound] = useGameState(0)
-  const q = useMemo(()=> buildQuestion(level, op), [level, round, op])
+  const previousQuestion = useRef<string | null>(null)
+  const q = useMemo(()=> {
+    let question = buildQuestion(level, op)
+    let key = `${question.a}:${question.op}:${question.b}`
+    for (let attempt = 0; attempt < 12 && key === previousQuestion.current; attempt++) {
+      question = buildQuestion(level, op)
+      key = `${question.a}:${question.op}:${question.b}`
+    }
+    previousQuestion.current = key
+    return question
+  }, [level, round, op])
   const [chosen, setChosen] = useGameState<number | null>(null)
   const [msg, setMsg] = useGameState('')
   const [series, setSeries] = useGameState(10)
@@ -133,7 +144,7 @@ export default function MathGame() {
         <h2>Matemática ➗✖️➕➖</h2>
         <div className="row">
           <label htmlFor="math-level">Nível:</label>
-          <select id="math-level" value={level} onChange={e=> { setLevel(Number(e.target.value) as Level); restartSeries() }}>
+          <select id="math-level" value={level} disabled={chosen === q.correct} onChange={e=> { setLevel(Number(e.target.value) as Level); restartSeries() }}>
             <option value={1}>Fácil (0-10)</option>
             <option value={2}>Médio (0-20)</option>
             <option value={3}>Difícil (0-50)</option>
@@ -141,7 +152,7 @@ export default function MathGame() {
             <option value={5}>Super-herói (0-500)</option>
           </select>
           <label style={{ marginLeft: 12 }} htmlFor="math-operation">Operação:</label>
-          <select id="math-operation" value={op} onChange={e=> { setOp(e.target.value as Op); restartSeries() }}>
+          <select id="math-operation" value={op} disabled={chosen === q.correct} onChange={e=> { setOp(e.target.value as Op); restartSeries() }}>
             <option value="add">Adição (+)</option>
             <option value="sub">Subtração (−)</option>
             <option value="mul">Multiplicação (×)</option>
@@ -149,13 +160,13 @@ export default function MathGame() {
             <option value="mix">Misturar</option>
           </select>
           <label style={{ marginLeft: 12 }} htmlFor="math-series">Série:</label>
-          <select id="math-series" value={series} onChange={e=> changeSeries(Number(e.target.value))}>
+          <select id="math-series" value={series} disabled={chosen === q.correct} onChange={e=> changeSeries(Number(e.target.value))}>
             <option value={10}>10</option>
             <option value={15}>15</option>
             <option value={20}>20</option>
           </select>
           <label style={{ marginLeft: 12 }} htmlFor="math-timer">Cronômetro:</label>
-          <select id="math-timer" value={String(timeLeft !== null)} onChange={e=> setTimeLeft(e.target.value==='true' ? 15 : null)}>
+          <select id="math-timer" value={String(timeLeft !== null)} disabled={chosen === q.correct} onChange={e=> setTimeLeft(e.target.value==='true' ? 15 : null)}>
             <option value="false">Desligado</option>
             <option value="true">Ligado (15s)</option>
           </select>

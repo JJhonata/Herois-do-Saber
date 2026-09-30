@@ -1,5 +1,6 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useGameState } from '../lib/gameSession'
+import { shuffle } from '../lib/questionFlow'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { recordAnswer } from '../lib/review'
@@ -22,7 +23,7 @@ const BANK: Record<Category, Q[]> = {
     { q: 'Qual cor resulta da mistura de azul com amarelo?', options: ['Roxo', 'Verde', 'Laranja', 'Marrom'], correct: 1 },
     { q: 'Quantos dias tem uma semana?', options: ['5', '6', '7', '8'], correct: 2 },
     { q: 'Qual destes é um instrumento musical?', options: ['Piano', 'Livro', 'Copo', 'Lápis'], correct: 0 },
-    { q: 'Que horas da manhã normalmente tomamos café?', options: ['Meia-noite', 'Café da manhã', 'Almoço', 'Jantar'], correct: 1 },
+    { q: 'Qual refeição costumamos fazer pela manhã?', options: ['Ceia', 'Café da manhã', 'Almoço', 'Jantar'], correct: 1 },
     { q: 'Qual destes é um continente?', options: ['Brasil', 'África', 'Bahia', 'Amazonas'], correct: 1 },
     { q: 'Qual é o plural de “pão”?', options: ['Pãos', 'Pães', 'Paões', 'Pãoses'], correct: 1 },
     { q: 'O que usamos para medir o tempo?', options: ['Régua', 'Relógio', 'Tesoura', 'Bússola'], correct: 1 },
@@ -98,10 +99,6 @@ const BANK: Record<Category, Q[]> = {
   ],
 }
 
-function shuffle<T>(arr: T[]) {
-  return [...arr].sort(() => Math.random() - 0.5)
-}
-
 export default function QuizGame() {
   const [category, setCategory] = useGameState<Category>('geral')
   const [difficulty, setDifficulty] = useGameState<Difficulty>(() => getRecommendedDifficulty('quiz'))
@@ -114,13 +111,22 @@ export default function QuizGame() {
   const [i, setI] = useGameState(0)
   const [chosen, setChosen] = useGameState<number | null>(null)
   const [score, setScore] = useGameState(0)
+  const [feedback, setFeedback] = useGameState('')
+  const advanceTimer = useRef<number | null>(null)
   const q = questions[i]
+  useEffect(() => () => {
+    if (advanceTimer.current !== null) window.clearTimeout(advanceTimer.current)
+  }, [])
+
   function restart(cat: Category, nextDifficulty = difficulty) {
+    if (advanceTimer.current !== null) window.clearTimeout(advanceTimer.current)
+    advanceTimer.current = null
     setCategory(cat)
     setDifficulty(nextDifficulty)
     setI(0)
     setScore(0)
     setChosen(null)
+    setFeedback('')
   }
 
   function pick(idx: number) {
@@ -128,11 +134,26 @@ export default function QuizGame() {
     const correct = idx === q.correct
     recordAnswer('quiz', q.q, q.options[idx], q.options[q.correct], correct, 'Leia a pergunta novamente e compare as opções com as informações que você conhece.')
     setChosen(idx)
-    if (correct) { setScore(s=>s+1); playCorrect(); addStars('quiz', 1); setTimeout(()=> next(), 700) } else { playIncorrect() }
+    if (correct) {
+      setFeedback('Resposta certa! Próxima pergunta em instantes.')
+      setScore(s=>s+1)
+      playCorrect()
+      addStars('quiz', 1)
+      advanceTimer.current = window.setTimeout(() => {
+        advanceTimer.current = null
+        next()
+      }, 700)
+    } else {
+      setFeedback('Essa não é a resposta. Reveja as opções ou avance para a próxima pergunta.')
+      playIncorrect()
+    }
   }
 
   function next() {
+    if (advanceTimer.current !== null) window.clearTimeout(advanceTimer.current)
+    advanceTimer.current = null
     setChosen(null)
+    setFeedback('')
     setI((i+1) % questions.length)
   }
 
@@ -141,8 +162,8 @@ export default function QuizGame() {
       <div className="game">
         <h2>Quiz ❓</h2>
         <div className="row" style={{ alignItems: 'center' }}>
-          <label>Categoria:</label>
-          <select value={category} onChange={e=> restart(e.target.value as Category)}>
+          <label htmlFor="quiz-category">Categoria:</label>
+          <select id="quiz-category" value={category} onChange={e=> restart(e.target.value as Category)}>
             <option value="geral">Geral</option>
             <option value="ciencias">Ciências</option>
             <option value="portugues">Português</option>
@@ -158,13 +179,14 @@ export default function QuizGame() {
         <p style={{ fontSize: 22 }}>{q.q}</p>
         <div className="row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 10 }}>
           {q.options.map((opt, idx) => (
-            <button key={idx} onClick={()=>pick(idx)} className={chosen===idx ? (idx===q.correct ? 'accent' : 'danger') : ''} style={{ fontSize: 18, textAlign: 'left' }}>
+            <button key={idx} disabled={chosen !== null} onClick={()=>pick(idx)} className={chosen===idx ? (idx===q.correct ? 'accent' : 'danger') : ''} style={{ fontSize: 18, textAlign: 'left' }}>
               {opt}
             </button>
           ))}
         </div>
+        <p className="game-message" role="status" aria-live="polite">{feedback}</p>
         <div className="row" style={{ marginTop: 12 }}>
-          <button className="secondary" onClick={next}>Próxima</button>
+          <button className="secondary" onClick={next} disabled={chosen === q.correct}>{chosen === null ? 'Pular pergunta' : 'Próxima pergunta'}</button>
         </div>
       </div>
     </div>

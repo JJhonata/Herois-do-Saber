@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useGameState } from '../lib/gameSession'
+import { shuffledCycleIndex } from '../lib/questionFlow'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
@@ -51,7 +52,7 @@ export default function ScienceTrueFalse() {
     : level === 'medium'
       ? [...FACTS.slice(4, 16), ...FACTS.slice(24, 27)]
       : FACTS.slice(8)
-  const fact = useMemo(() => deck[round % deck.length], [round, level])
+  const fact = useMemo(() => deck[shuffledCycleIndex(deck.length, round, `science:${level}`)], [round, level])
   const correct = answer === fact.answer
 
   function choose(value: boolean) {
@@ -87,11 +88,11 @@ export default function ScienceTrueFalse() {
           <p>{fact.statement}</p>
         </div>
         <div className="true-false-actions">
-          <button className="accent" onClick={() => choose(true)}>✅ Verdadeiro</button>
-          <button className="danger" onClick={() => choose(false)}>❌ Falso</button>
+          <button className="accent" disabled={answer !== null} onClick={() => choose(true)}>✅ Verdadeiro</button>
+          <button className="danger" disabled={answer !== null} onClick={() => choose(false)}>❌ Falso</button>
         </div>
         {answer !== null && (
-          <div className={`feedback-box ${correct ? 'feedback-correct' : 'feedback-wrong'}`}>
+          <div className={`feedback-box ${correct ? 'feedback-correct' : 'feedback-wrong'}`} role="status" aria-live="polite">
             <strong>{correct ? 'Muito bem!' : 'Não foi dessa vez.'}</strong>
             <div>{fact.explanation}</div>
             <button className="secondary" onClick={next} style={{ marginTop: 12 }}>Próxima pergunta</button>

@@ -1,4 +1,5 @@
 import { useGameState } from '../lib/gameSession'
+import { shuffledCycleIndex } from '../lib/questionFlow'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { recordAnswer } from '../lib/review'
@@ -23,7 +24,7 @@ export default function MoneyGame() {
   const [message, setMessage] = useGameState('')
   const [resolved, setResolved] = useGameState(false)
   const deck = items.filter(({ price }) => level === 'easy' ? price <= 10 : level === 'medium' ? price <= 25 : true)
-  const item = deck[index % deck.length]
+  const item = deck[shuffledCycleIndex(deck.length, index, `money:${level}`)]
   const payments = level === 'easy' ? [5] : level === 'medium' ? [5, 10] : [5, 10, 20]
   const paid = item.price + payments[index % payments.length]
   const change = paid - item.price
