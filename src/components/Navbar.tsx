@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { getTotalStars } from '../lib/progress'
 import { isSoundEnabled, setSoundEnabled } from '../lib/sfx'
@@ -61,8 +61,10 @@ export default function Navbar() {
         </details>
       </div>
       <div className="nav-links">
-        <Link to="/" className="home-link">🏠 Início</Link>
+        <NavLink to="/" end className={({ isActive }) => `home-link${isActive ? ' active' : ''}`}>🏠 Início</NavLink>
+        <NavLink to="/books" className={({ isActive }) => `books-link${isActive ? ' active' : ''}`}>📚 Biblioteca</NavLink>
       </div>
+      <NavLink to="/books" className={({ isActive }) => `nav-books-compact${isActive ? ' active' : ''}`} aria-label="Biblioteca de leitura" title="Biblioteca de leitura">📚</NavLink>
     </nav>
   )
 }

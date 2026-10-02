@@ -8,6 +8,7 @@ import { setLastPlayedGame } from './lib/progress'
 import GameSupport from './components/GameSupport'
 import GameErrorBoundary from './components/GameErrorBoundary'
 import { GameSession } from './lib/gameSession'
+import BookLibrary from './pages/BookLibrary'
 
 function GamePhase({ path }: { path: string }) {
   const [, setTick] = useState(0)
@@ -29,6 +30,8 @@ export default function App() {
   const location = useLocation()
   const navigate = useNavigate()
   const activeGame = gameCatalog.find(({ path }) => path === location.pathname)
+  const isBooksPage = location.pathname.startsWith('/books')
+  const isBookReader = isBooksPage && location.pathname !== '/books'
 
   useEffect(() => {
     if (activeGame) setLastPlayedGame(activeGame.id)
@@ -38,7 +41,7 @@ export default function App() {
     <>
       <Navbar />
       <a className="skip-link" href="#main-content">Pular para o conteúdo</a>
-      {location.pathname !== '/' && <>
+      {location.pathname !== '/' && !isBookReader && <>
         <button className="global-back-button" onClick={() => navigate('/')}>← Voltar aos jogos</button>
         <GamePhase path={location.pathname} />
         <GameSupport path={location.pathname} />
@@ -48,6 +51,8 @@ export default function App() {
           <Suspense fallback={<div className="container game-loading" role="status"><span className="loading-spinner" aria-hidden="true" />Carregando atividade…</div>}>
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/books" element={<BookLibrary />} />
+              <Route path="/books/:slug" element={<BookLibrary />} />
               {gameCatalog.map(({ id, path, component: Game }) => <Route key={id} path={path} element={<GameSession gameId={id}><Game /></GameSession>} />)}
               <Route path="*" element={<Home />} />
             </Routes>
