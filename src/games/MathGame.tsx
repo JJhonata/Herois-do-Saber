@@ -4,7 +4,10 @@ import { playBonus, playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
 import { addStars, getRecommendedDifficulty } from '../lib/progress'
 import { recordAnswer } from '../lib/review'
+import { getGameMistakeCount } from '../lib/review'
 import { shuffle } from '../lib/questionFlow'
+import GameHeader from '../components/GameHeader'
+import GameResult from '../components/GameResult'
 
 type Level = 1 | 2 | 3 | 4 | 5
 type Op = 'add' | 'sub' | 'mul' | 'div' | 'mix'
@@ -53,10 +56,10 @@ export default function MathGame() {
   const [level, setLevel] = useGameState<Level>(() => {
     const recommended = getRecommendedDifficulty('math')
     return recommended === 'easy' ? 1 : recommended === 'medium' ? 3 : 5
-  })
-  const [op, setOp] = useGameState<Op>('add')
-  const [score, setScore] = useGameState(0)
-  const [round, setRound] = useGameState(0)
+  }, 'level')
+  const [op, setOp] = useGameState<Op>('add', 'operation')
+  const [score, setScore] = useGameState(0, 'score')
+  const [round, setRound] = useGameState(0, 'round')
   const previousQuestion = useRef<string | null>(null)
   const q = useMemo(()=> {
     let question = buildQuestion(level, op)
@@ -68,13 +71,13 @@ export default function MathGame() {
     previousQuestion.current = key
     return question
   }, [level, round, op])
-  const [chosen, setChosen] = useGameState<number | null>(null)
-  const [msg, setMsg] = useGameState('')
-  const [series, setSeries] = useGameState(10)
-  const [remaining, setRemaining] = useGameState(10)
-  const [finished, setFinished] = useGameState(false)
-  const [timeLeft, setTimeLeft] = useGameState<number | null>(null)
-  const [streak, setStreak] = useGameState(0)
+  const [chosen, setChosen] = useGameState<number | null>(null, 'chosen')
+  const [msg, setMsg] = useGameState('', 'message')
+  const [series, setSeries] = useGameState(10, 'series')
+  const [remaining, setRemaining] = useGameState(10, 'remaining')
+  const [finished, setFinished] = useGameState(false, 'finished')
+  const [timeLeft, setTimeLeft] = useGameState<number | null>(null, 'time-left')
+  const [streak, setStreak] = useGameState(0, 'streak')
 
   // cronômetro opcional
   useEffect(()=>{
@@ -141,7 +144,7 @@ export default function MathGame() {
   return (
     <div className="container">
       <div className="game">
-        <h2>Matemática ➗✖️➕➖</h2>
+        <GameHeader title="Matemática ➗✖️➕➖" description="Resolva operações, escolha o nível e avance no seu ritmo." />
         <div className="row">
           <label htmlFor="math-level">Nível:</label>
           <select id="math-level" value={level} disabled={chosen === q.correct} onChange={e=> { setLevel(Number(e.target.value) as Level); restartSeries() }}>
@@ -172,10 +175,7 @@ export default function MathGame() {
           </select>
           <span style={{ marginLeft: 'auto' }}>Pontuação: <strong>{score}</strong></span>
         </div>
-        {finished ? <div className="series-summary" role="status">
-          <h3>Série concluída! 🏆</h3><p>Você acertou {score} de {series} questões.</p>
-          <button className="accent" onClick={restartSeries}>Jogar outra série</button>
-        </div> : <>
+        {finished ? <GameResult score={score} total={series} reviewCount={getGameMistakeCount('math')} onRestart={restartSeries} /> : <>
           <div style={{ fontSize: 16, opacity: .8 }}>Questão {series - remaining + 1} de {series} · Sequência: <strong>{streak}</strong>{timeLeft!==null && <> • Tempo: <strong>{timeLeft}s</strong></>}</div>
           <div style={{ fontSize: 36, margin: '8px 0 16px' }}>{q.a} {q.symbol} {q.b} = ?</div>
           <div className="row" style={{ gap: 12 }}>

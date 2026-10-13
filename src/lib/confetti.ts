@@ -1,5 +1,6 @@
 // Confete simples com canvas temporário
 export function shootConfetti() {
+  if (document.documentElement.dataset.reducedMotion === 'true' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
   const canvas = document.createElement('canvas')
   canvas.style.position = 'fixed'
   canvas.style.inset = '0'

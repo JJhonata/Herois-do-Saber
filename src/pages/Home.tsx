@@ -5,6 +5,7 @@ import { getLastPlayedGame, getLearningProgress, getStars, getSuggestedGame } fr
 import { hasLearningProfileResponse, setPreferredDifficulty, skipLearningProfile } from '../lib/learnerProfile'
 import type { Difficulty } from '../lib/progress'
 import { hasGameSession } from '../lib/gameSession'
+import { getGameMistakeCount } from '../lib/review'
 
 const areaIcons: Record<string, string> = {
   Todos: '🌟', Português: '📖', Inglês: '🇬🇧', Matemática: '🔢', Ciências: '🔬', Geografia: '🗺️',
@@ -19,6 +20,7 @@ const areaDescriptions: Record<string, string> = {
 export default function Home() {
   const [, setTick] = useState(0)
   const [area, setArea] = useState('Todos')
+  const [query, setQuery] = useState('')
   const [profileAnswered, setProfileAnswered] = useState(hasLearningProfileResponse)
   useEffect(() => {
     const update = () => setTick((tick) => tick + 1)
@@ -26,7 +28,12 @@ export default function Home() {
     return () => window.removeEventListener('progress:update', update)
   }, [])
 
-  const shown = area === 'Todos' ? gameCatalog : gameCatalog.filter((game) => game.area === area)
+  const normalizedQuery = query.trim().toLocaleLowerCase('pt-BR')
+  const shown = gameCatalog.filter((game) => {
+    const matchesArea = area === 'Todos' || game.area === area
+    const searchable = `${game.title} ${game.desc} ${game.area}`.toLocaleLowerCase('pt-BR')
+    return matchesArea && (!normalizedQuery || searchable.includes(normalizedQuery))
+  })
   const gamesByArea = Object.fromEntries(gameAreas.map((name) => [name, gameCatalog.filter((game) => game.area === name).length])) as Record<(typeof gameAreas)[number], number>
   const total = gameCatalog.reduce((sum, game) => sum + getStars(game.id), 0)
   const areas = ['Todos', ...gameAreas]
@@ -69,7 +76,7 @@ export default function Home() {
     <section className="missions-panel" aria-labelledby="missions-title">
       <div className="missions-heading">
         <div><span className="eyebrow">SUAS CONQUISTAS</span><h2 id="missions-title">Missões e medalhas</h2></div>
-        <span className="mission-total">⭐ {learning.totalStars} estrelas</span>
+        <span className="mission-total">⭐ {learning.totalStars} estrelas · 🔥 {learning.streakDays} {learning.streakDays === 1 ? 'dia' : 'dias'}</span>
       </div>
       <p className="missions-intro">Cada desafio completo ajuda você a avançar. As medalhas aparecem conforme explora e aprende.</p>
       <div className="mission-grid">
@@ -101,23 +108,34 @@ export default function Home() {
           <span className="subject-tab-count">{name === 'Todos' ? gameCatalog.length : gamesByArea[name as (typeof gameAreas)[number]]}</span>
         </button>)}
       </div>
+      <div className="game-search-row">
+        <label htmlFor="game-search">Encontrar uma aventura</label>
+        <div className="game-search-controls">
+          <input id="game-search" type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar por nome ou matéria" />
+          {query && <button type="button" className="secondary game-search-clear" onClick={() => setQuery('')}>Limpar busca</button>}
+        </div>
+      </div>
     </section>
 
     <section aria-labelledby="games-title">
       <div className="section-heading"><div><span className="eyebrow">ÁREA DE APRENDIZAGEM</span><h2 id="games-title">{area === 'Todos' ? 'Todos os jogos' : area}</h2></div><span>{shown.length} {shown.length === 1 ? 'jogo' : 'jogos'}</span></div>
-      <div className="grid">{shown.map((game) => {
+      {shown.length === 0 ? <div className="games-empty" role="status"><strong>Nenhuma aventura encontrada</strong><p>Tente outro termo ou limpe a busca para ver todos os jogos.</p><button type="button" className="secondary" onClick={() => { setQuery(''); setArea('Todos') }}>Mostrar todos</button></div> : <div className="grid">{shown.map((game) => {
         const stars = getStars(game.id)
         const phase = Math.min(10, Math.floor(stars / 5) + 1)
-        const phaseStars = stars >= 50 ? 5 : stars % 5
+        const reviewCount = getGameMistakeCount(game.id)
         return <article className={`card ${game.cls}`} data-area={game.area} key={game.id}>
         <div className="card-top"><div className="game-emoji" aria-hidden="true">{game.emoji}</div><div className="badge">{game.tag}</div></div>
         <span className="subject-label">{game.area}</span>
         <h3>{game.title}</h3>
         <p>{game.desc}</p>
+        {reviewCount > 0 && <span className="review-badge">📘 {reviewCount} tentativa(s) para revisar</span>}
         <div className="card-progress-copy"><span>⭐ {stars} estrelas</span><span>{stars >= 50 ? 'Concluído' : `Fase ${phase} de 10`}</span></div>
         <div className="card-progress-track" role="progressbar" aria-label={`Progresso de ${game.title}`} aria-valuemin={0} aria-valuemax={50} aria-valuenow={Math.min(stars, 50)}><span style={{ width: `${(Math.min(stars, 50) / 50) * 100}%` }} /></div>
-        <Link to={game.path} className="accent play-button">Jogar agora</Link>
-      </article>})}</div>
+        <div className="card-actions">
+          <Link to={game.path} className="accent play-button">Jogar agora</Link>
+          {reviewCount > 0 && <Link to={`${game.path}#game-support`} className="review-link">Revisar tentativas</Link>}
+        </div>
+      </article>})}</div>}
     </section>
   </div>
 }

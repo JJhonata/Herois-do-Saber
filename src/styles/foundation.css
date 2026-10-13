@@ -1,0 +1,19 @@
+* { box-sizing: border-box; }
+:root {
+  /* Paleta infantil roxo/rosa */
+  --primary: #7c4dff;
+  --secondary: #ffb3c1;
+  --accent: #00d1b2;
+  --danger: #ff5c8a;
+  --bg: #faf7ff;
+  --text: #1f1740;
+  --card-size: 96px;
+}
+html, body, #root { height: 100%; margin: 0; font-family: 'Nunito', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; background: radial-gradient(1000px 800px at 0% 0%, #fff 0%, #f5f0ff 50%, var(--bg) 100%); color: var(--text); }
+h1, h2, h3, nav strong { font-family: 'Baloo 2', 'Fredoka', 'Nunito', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; }
+h1 { font-size: 40px; margin: 0 0 12px 0; }
+h2 { font-size: 28px; margin: 0 0 12px 0; }
+
+::selection { background: rgba(124,77,255,.2); }
+@keyframes appear { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes glow-pulse { 0% { box-shadow: 0 0 0 rgba(255,255,255,0); } 50% { box-shadow: 0 0 18px rgba(255,255,255,.45); } 100% { box-shadow: 0 0 0 rgba(255,255,255,0); } }

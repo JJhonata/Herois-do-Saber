@@ -5,6 +5,7 @@ import { addStars, getRecommendedDifficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
 import { recordAnswer } from '../lib/review'
+import GameHeader from '../components/GameHeader'
 
 type Level = 'easy' | 'medium' | 'hard'
 type Question = { values: number[]; answer: number; options: number[]; clue: string }
@@ -42,10 +43,10 @@ function buildQuestion(level: Level, seed: number): Question {
 }
 
 export default function SequenceGame() {
-  const [level, setLevel] = useGameState<Level>(() => getRecommendedDifficulty('sequence'))
-  const [round, setRound] = useGameState(0)
-  const [score, setScore] = useGameState(0)
-  const [picked, setPicked] = useGameState<number | null>(null)
+  const [level, setLevel] = useGameState<Level>(() => getRecommendedDifficulty('sequence'), 'level')
+  const [round, setRound] = useGameState(0, 'round')
+  const [score, setScore] = useGameState(0, 'score')
+  const [picked, setPicked] = useGameState<number | null>(null, 'picked')
   const question = useMemo(() => buildQuestion(level, round), [level, round])
 
   function choose(value: number) {
@@ -69,8 +70,7 @@ export default function SequenceGame() {
   return (
     <div className="container">
       <div className="game">
-        <h2>Sequência dos Heróis 🧩</h2>
-        <p>Descubra qual número vem depois.</p>
+        <GameHeader title="Sequência dos Heróis 🧩" description="Observe o padrão e descubra qual número vem depois." />
         <div className="row">
           <label htmlFor="sequence-level">Nível:</label>
           <select id="sequence-level" value={level} onChange={e => { setLevel(e.target.value as Level); setRound(0); setPicked(null); setScore(0) }}>

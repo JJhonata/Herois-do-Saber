@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useGameState } from '../lib/gameSession'
 import { addStars } from '../lib/progress'
+import GameHeader from '../components/GameHeader'
 
 const COLORS = ['#000000', '#ff3b3b', '#ff9f1c', '#ffd166', '#7bb661', '#00d1b2', '#2c6cff', '#7c4dff', '#ff5c8a', '#ffffff']
 
@@ -11,12 +12,12 @@ export default function PaintGame() {
   const dprRef = useRef(1)
   const snapshotRef = useRef<ImageData | null>(null)
   const historyRef = useRef<ImageData[]>([])
-  const [color, setColor] = useGameState('#2c6cff')
-  const [brush, setBrush] = useGameState(10)
-  const [hasArtwork, setHasArtwork] = useGameState(false)
-  const [rewarded, setRewarded] = useGameState(false)
-  const [tool, setTool] = useGameState<'brush' | 'eraser' | 'picker' | 'fill' | 'line' | 'rect' | 'circle'>('brush')
-  const [canvasData, setCanvasData] = useGameState<string | null>(null)
+  const [color, setColor] = useGameState('#2c6cff', 'color')
+  const [brush, setBrush] = useGameState(10, 'brush-size')
+  const [hasArtwork, setHasArtwork] = useGameState(false, 'has-artwork')
+  const [rewarded, setRewarded] = useGameState(false, 'rewarded')
+  const [tool, setTool] = useGameState<'brush' | 'eraser' | 'picker' | 'fill' | 'line' | 'rect' | 'circle'>('brush', 'tool')
+  const [canvasData, setCanvasData] = useGameState<string | null>(null, 'canvas-data')
   const [saveMessage, setSaveMessage] = useState('')
   const shapeStartRef = useRef<{ x: number, y: number } | null>(null)
 
@@ -215,7 +216,8 @@ export default function PaintGame() {
       const cx = stack.pop() as number
       if (cx < 0 || cy < 0 || cx >= w || cy >= h) continue
       const i = (cy * w + cx) * 4
-      if (!colorsEqual([data[i], data[i+1], data[i+2], data[i+3]] as any, target)) continue
+      const pixel: [number, number, number, number] = [data[i], data[i+1], data[i+2], data[i+3]]
+      if (!colorsEqual(pixel, target)) continue
       data[i] = fill[0]; data[i+1] = fill[1]; data[i+2] = fill[2]; data[i+3] = 255
       stack.push(cx+1, cy, cx-1, cy, cx, cy+1, cx, cy-1)
     }
@@ -237,8 +239,7 @@ export default function PaintGame() {
   return (
     <div className="container">
       <div className="game">
-        <h2>Pintura 🎨</h2>
-        <p>Desenhe, use borracha, conta-gotas, balde de tinta e formas. Salve sua arte!</p>
+        <GameHeader title="Pintura 🎨" description="Desenhe, use borracha, conta-gotas, balde de tinta e formas. Salve sua arte!" />
         <div className="row" style={{ alignItems: 'stretch' }}>
           <div className="paint-toolbar">
             <div className="tools">

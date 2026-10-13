@@ -4,6 +4,7 @@ import { gameCatalog, gameHints, gameLearnings } from '../lib/gameCatalog'
 import { getRecommendedDifficulty } from '../lib/progress'
 import { clearGameSession } from '../lib/gameSession'
 import { clearGameReview, getGameReview, getGameReviewCount, getGameRoundReview, type AnswerReview } from '../lib/review'
+import RoundSummary from './RoundSummary'
 
 const difficultyLabels = { easy: 'Começando', medium: 'Praticando', hard: 'Desafio' }
 
@@ -48,9 +49,15 @@ export default function GameSupport({ path }: { path: string }) {
   const navigate = useNavigate()
   const game = gameCatalog.find(({ path: gamePath }) => gamePath === path)
   useEffect(() => {
-    const message = document.querySelector('.game-message')
+    const message = document.querySelector<HTMLElement>('.game-message')
     if (!message) return
-    const update = () => setMissedAnswer(/tente|ops|errad|incorret|observe|pense|releia|escolha outra/i.test(message.textContent || ''))
+    let firstUpdate = true
+    const update = () => {
+      setMissedAnswer(/tente|ops|errad|incorret|observe|pense|releia|escolha outra/i.test(message.textContent || ''))
+      message.setAttribute('tabindex', '-1')
+      if (!firstUpdate && message.textContent?.trim()) message.focus({ preventScroll: true })
+      firstUpdate = false
+    }
     const observer = new MutationObserver(update)
     observer.observe(message, { childList: true, characterData: true, subtree: true })
     update()
@@ -83,7 +90,7 @@ export default function GameSupport({ path }: { path: string }) {
   if (!game) return null
 
   const difficulty = difficultyLabels[getRecommendedDifficulty(game.id)]
-  return <section className="game-support" data-game-area={game.area} aria-label="Ajuda para esta atividade">
+  return <section id="game-support" className="game-support" data-game-area={game.area} aria-label="Ajuda para esta atividade">
     <div className="game-support-actions">
       <span className="recommended-level"><span aria-hidden="true">🧭</span> Nível sugerido: <strong>{difficulty}</strong></span>
       <div className="game-support-buttons">
@@ -101,8 +108,7 @@ export default function GameSupport({ path }: { path: string }) {
     {showHint && <p className="game-hint">{gameHints[game.id]}</p>}
     {reviewCount > 0 && <section className="round-review" aria-label="Resumo desta atividade">
       {roundNumber > 0 ? <>
-        <div className="round-review-heading"><strong>📊 Resumo da rodada {roundNumber}</strong><span>{roundReview.filter(({ correct }) => correct).length}/{roundReview.length} acertos</span></div>
-        <p>{roundReview.filter(({ correct }) => !correct).length} resposta(s) para revisar · rodada concluída a cada 5 tentativas</p>
+        <RoundSummary roundNumber={roundNumber} correct={roundReview.filter(({ correct }) => correct).length} total={roundReview.length} />
       </> : <div className="round-review-heading"><strong>📊 Rodada em andamento</strong><span>{reviewCount}/5 tentativas</span></div>}
       <button type="button" className="learning-feedback-toggle" aria-expanded={showReview} onClick={() => setShowReview((visible) => !visible)}>
         {showReview ? 'Fechar revisão' : `Rever erros (${review.filter(({ correct }) => !correct).length})`}

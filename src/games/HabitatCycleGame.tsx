@@ -5,6 +5,7 @@ import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/prog
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
 import { recordAnswer } from '../lib/review'
+import GameHeader from '../components/GameHeader'
 
 type Cycle = { name: string; emoji: string; steps: string[]; learning: string }
 const cycles: Record<Difficulty, Cycle[]> = {
@@ -26,12 +27,12 @@ const cycles: Record<Difficulty, Cycle[]> = {
 }
 
 export default function HabitatCycleGame() {
-  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('nature'))
-  const [round, setRound] = useGameState(0)
-  const [savedSteps, setSavedSteps] = useGameState<string[]>([])
-  const [, setMessage] = useGameState('')
-  const [completed, setCompleted] = useGameState(false)
-  const [selected, setSelected] = useGameState<string | null>(null)
+  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('nature'), 'level')
+  const [round, setRound] = useGameState(0, 'round')
+  const [savedSteps, setSavedSteps] = useGameState<string[]>([], 'saved-steps')
+  const [, setMessage] = useGameState('', 'message')
+  const [completed, setCompleted] = useGameState(false, 'completed')
+  const [selected, setSelected] = useGameState<string | null>(null, 'selected')
   const cycle = cycles[level][shuffledCycleIndex(cycles[level].length, round, `nature:${level}`)]
   const firstWrongIndex = savedSteps.findIndex((step, index) => step !== cycle.steps[index])
   const stepIndex = Math.min(cycle.steps.length - 1, firstWrongIndex === -1 ? savedSteps.length : firstWrongIndex)
@@ -79,8 +80,7 @@ export default function HabitatCycleGame() {
   }
 
   return <div className="container"><div className="game nature-game">
-    <h2>Ciclos da Natureza 🌿</h2>
-    <p>Toque na opção que vem agora. Você responde uma etapa por vez.</p>
+    <GameHeader title="Ciclos da Natureza 🌿" description="Escolha a próxima etapa e descubra como cada ciclo se conecta." />
     <div className="row difficulty-picker"><label htmlFor="nature-level">Nível:</label><select id="nature-level" value={level} onChange={(event) => { setLevel(event.target.value as Difficulty); setRound(0); setSavedSteps([]); setSelected(null); setCompleted(false); setMessage('') }}><option value="easy">Começando · ciclos curtos</option><option value="medium">Praticando · mais etapas</option><option value="hard">Desafio · etapas mais detalhadas</option></select></div>
     <section className="nature-cycle-heading"><span aria-hidden="true">{cycle.emoji}</span><div><strong>{cycle.name}</strong><small>Etapa {completed ? cycle.steps.length : stepIndex + 1} de {cycle.steps.length}</small></div></section>
     {completed ? <>

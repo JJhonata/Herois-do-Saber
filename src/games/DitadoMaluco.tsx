@@ -4,6 +4,7 @@ import { shuffledCycleIndex } from '../lib/questionFlow'
 import { playCorrect } from '../lib/sfx'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { recordAnswer } from '../lib/review'
+import GameHeader from '../components/GameHeader'
 
 const PHRASES = [
   { text: 'Os heróis estudam todos os dias.', hint: 'Rotina dos heróis' },
@@ -29,10 +30,10 @@ const PHRASES = [
 ]
 
 export default function DitadoMaluco() {
-  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('ditado'))
-  const [idx, setIdx] = useGameState(0)
-  const [text, setText] = useGameState('')
-  const [speechVolume, setSpeechVolume] = useGameState(1)
+  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('ditado'), 'level')
+  const [idx, setIdx] = useGameState(0, 'index')
+  const [text, setText] = useGameState('', 'text')
+  const [speechVolume, setSpeechVolume] = useGameState(1, 'speech-volume')
   const deck = level === 'easy' ? PHRASES.slice(0, 7) : level === 'medium' ? PHRASES.slice(5, 14) : PHRASES.slice(13)
   const fraseData = deck[shuffledCycleIndex(deck.length, idx, `dictation:${level}`)]
   const frase = fraseData.text
@@ -51,7 +52,7 @@ export default function DitadoMaluco() {
   }
 
   const completo = text === frase
-  const [awarded, setAwarded] = useGameState(false)
+  const [awarded, setAwarded] = useGameState(false, 'awarded')
   useEffect(()=>{
     if (completo && !awarded) {
       recordAnswer('ditado', 'Escreva a frase que ouviu.', text, frase, true, 'Compare os sons da fala às letras e revise acentos, espaços e pontuação.')
@@ -71,8 +72,7 @@ export default function DitadoMaluco() {
   return (
     <div className="container">
       <div className="game">
-        <h2>Ditado Maluco ✍️</h2>
-        <p>Ouça e digite a frase. Use a dica se precisar.</p>
+        <GameHeader title="Ditado Maluco ✍️" description="Ouça e digite a frase. Use a dica se precisar." />
         <div className="row">
           <button className="secondary" onClick={ouvir}>🔊 Ouvir</button>
           <span>Dica: {fraseData.hint}</span>

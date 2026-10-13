@@ -35,12 +35,20 @@ export function GameSession({ gameId, children }: { gameId: GameId; children: Re
 }
 
 /** Behaves like useState while restoring and saving each game's React state in local storage. */
-export function useGameState<T>(initial: T | (() => T)): [T, Dispatch<SetStateAction<T>>] {
+export function useGameState<T>(initial: T | (() => T), slotKey?: string): [T, Dispatch<SetStateAction<T>>] {
   const gameId = useContext(GameSessionContext)
-  const slot = useId()
+  const legacySlot = useId()
+  const slot = slotKey || legacySlot
   const [value, setValue] = useState<T>(() => {
     const initialValue = resolveInitial(initial)
-    return gameId ? readSlot(gameId, slot, initialValue) : initialValue
+    if (!gameId) return initialValue
+    const saved = readSessions()[gameId]?.[slot]
+    if (saved !== undefined) return saved as T
+    if (slotKey) {
+      const legacySaved = readSessions()[gameId]?.[legacySlot]
+      if (legacySaved !== undefined) return legacySaved as T
+    }
+    return initialValue
   })
   const setPersistedValue = useCallback<Dispatch<SetStateAction<T>>>((next) => {
     setValue((current) => {

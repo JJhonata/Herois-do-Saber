@@ -2,6 +2,7 @@ import { useGameState } from '../lib/gameSession'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { recordAnswer } from '../lib/review'
 import { playCorrect, playIncorrect } from '../lib/sfx'
+import GameHeader from '../components/GameHeader'
 import { shuffle } from '../lib/questionFlow'
 
 const WORDS = [
@@ -41,13 +42,13 @@ function scramble(word: string) {
 }
 
 export default function WordScramble() {
-  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('scramble'))
-  const [deck, setDeck] = useGameState(() => wordsFor(getRecommendedDifficulty('scramble')))
-  const [index, setIndex] = useGameState(0)
-  const [scrambled, setScrambled] = useGameState(() => scramble(deck[0].w))
-  const [input, setInput] = useGameState('')
-  const [tries, setTries] = useGameState(0)
-  const [solved, setSolved] = useGameState(false)
+  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('scramble'), 'level')
+  const [deck, setDeck] = useGameState(() => wordsFor(getRecommendedDifficulty('scramble')), 'deck')
+  const [index, setIndex] = useGameState(0, 'index')
+  const [scrambled, setScrambled] = useGameState(() => scramble(deck[0].w), 'scrambled')
+  const [input, setInput] = useGameState('', 'input')
+  const [tries, setTries] = useGameState(0, 'tries')
+  const [solved, setSolved] = useGameState(false, 'solved')
   const pick = deck[index]
 
   function advance() {
@@ -94,8 +95,7 @@ export default function WordScramble() {
   }
 
   return <div className="container"><div className="game">
-    <h2>Desembaralhar Palavras 🔤</h2>
-    <p>Dica: {pick.hint}</p>
+    <GameHeader title="Desembaralhar Palavras 🔤" description={`Dica: ${pick.hint}`} />
     <div className="row difficulty-picker"><label htmlFor="scramble-level">Nível:</label><select id="scramble-level" value={level} disabled={solved} onChange={event => changeLevel(event.target.value as Difficulty)}><option value="easy">Começando · palavras curtas</option><option value="medium">Praticando · palavras médias</option><option value="hard">Desafio · palavras longas</option></select></div>
     <p>Palavra: <strong style={{ letterSpacing: 2, fontSize: 24 }}>{scrambled}</strong></p>
     <label className="visually-hidden" htmlFor="scramble-answer">Digite a palavra</label>

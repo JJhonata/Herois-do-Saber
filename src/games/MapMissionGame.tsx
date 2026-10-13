@@ -4,6 +4,7 @@ import { shuffledCycleIndex, shuffle } from '../lib/questionFlow'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { recordAnswer } from '../lib/review'
+import GameHeader from '../components/GameHeader'
 
 type Place = { name: string; emoji: string; x: number; y: number }
 type Direction = 'Norte' | 'Sul' | 'Leste' | 'Oeste' | 'Nordeste' | 'Noroeste' | 'Sudeste' | 'Sudoeste'
@@ -31,10 +32,10 @@ function getDirection(place: Place): Direction {
 }
 
 export default function MapMissionGame() {
-  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('map'))
-  const [round, setRound] = useGameState(0)
-  const [picked, setPicked] = useGameState<Direction | null>(null)
-  const [message, setMessage] = useGameState('')
+  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('map'), 'level')
+  const [round, setRound] = useGameState(0, 'round')
+  const [picked, setPicked] = useGameState<Direction | null>(null, 'picked')
+  const [message, setMessage] = useGameState('', 'message')
   const [wrongAnswer, setWrongAnswer] = useState(false)
   const availableDirections = level === 'easy' ? directions.slice(0, 2) : level === 'medium' ? directions.slice(0, 4) : directions
   const targets = places.filter((place) => place.name !== 'Escola' && availableDirections.includes(getDirection(place)))
@@ -67,8 +68,7 @@ export default function MapMissionGame() {
   }
 
   return <div className="container"><div className="game map-game">
-    <h2>Missão no Mapa 🧭</h2>
-    <p>Parta da escola azul e encontre o destino amarelo.</p>
+    <GameHeader title="Missão no Mapa 🧭" description="Parta da escola azul e encontre o destino amarelo." />
     <div className="row difficulty-picker"><label htmlFor="map-level">Nível:</label><select id="map-level" value={level} onChange={(event) => { setLevel(event.target.value as Difficulty); setRound(0); setPicked(null); setWrongAnswer(false); setMessage('') }}><option value="easy">Começando · norte e sul</option><option value="medium">Praticando · pontos cardeais</option><option value="hard">Desafio · também use as diagonais</option></select></div>
     <div className="map-mission-prompt"><span aria-hidden="true">🗺️</span><div><strong>Encontre: {target.name} {target.emoji}</strong><p>Olhando da escola azul, em que direção fica o destino?</p></div></div>
     <div className="map-layout">

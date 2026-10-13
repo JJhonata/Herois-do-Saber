@@ -6,6 +6,7 @@ type Progress = Record<GameId, number>
 const KEY = 'herois_progress_v1'
 const LAST_GAME_KEY = 'herois_last_game_v1'
 const VISITED_GAMES_KEY = 'herois_visited_games_v1'
+const ACTIVITY_DAYS_KEY = 'herois_activity_days_v1'
 
 export type Difficulty = 'easy' | 'medium' | 'hard'
 
@@ -37,8 +38,23 @@ function write(p: Progress) {
   try { localStorage.setItem(KEY, JSON.stringify(p)) } catch {}
 }
 
+function todayKey() {
+  const date = new Date()
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+}
+
+function recordActivity() {
+  try {
+    const saved: unknown = JSON.parse(localStorage.getItem(ACTIVITY_DAYS_KEY) || '[]')
+    const days = Array.isArray(saved) ? saved.filter((day): day is string => typeof day === 'string') : []
+    const today = todayKey()
+    if (!days.includes(today)) localStorage.setItem(ACTIVITY_DAYS_KEY, JSON.stringify([...days, today].slice(-90)))
+  } catch {}
+}
+
 export function addStars(game: GameId, amount = 1) {
   if (!Number.isFinite(amount) || amount <= 0) return
+  recordActivity()
   const p = read()
   p[game] += amount
   write(p)
@@ -56,12 +72,27 @@ export function getTotalStars() {
 
 export function setLastPlayedGame(game: GameId) {
   try {
+    recordActivity()
     localStorage.setItem(LAST_GAME_KEY, game)
     const parsed: unknown = JSON.parse(localStorage.getItem(VISITED_GAMES_KEY) || '[]')
     const visited = Array.isArray(parsed) ? parsed.filter((value): value is GameId => gameCatalog.some(({ id }) => id === value)) : []
     if (!visited.includes(game)) visited.push(game)
     localStorage.setItem(VISITED_GAMES_KEY, JSON.stringify(visited))
   } catch {}
+}
+
+export function getLearningStreak() {
+  try {
+    const saved: unknown = JSON.parse(localStorage.getItem(ACTIVITY_DAYS_KEY) || '[]')
+    const days = new Set(Array.isArray(saved) ? saved.filter((day): day is string => typeof day === 'string') : [])
+    const date = new Date()
+    let streak = 0
+    while (days.has(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`)) {
+      streak += 1
+      date.setDate(date.getDate() - 1)
+    }
+    return streak
+  } catch { return 0 }
 }
 
 export function getLastPlayedGame(): GameId | null {
@@ -95,7 +126,7 @@ export function getLearningProgress() {
     { id: 'star-collector', title: 'Junte 10 estrelas', icon: '🏅', current: Math.min(totalStars, 10), target: 10 },
   ].map((milestone) => ({ ...milestone, complete: milestone.current >= milestone.target }))
 
-  return { totalStars, gamesExplored, subjectsExplored, milestones, bySubject }
+  return { totalStars, gamesExplored, subjectsExplored, streakDays: getLearningStreak(), milestones, bySubject }
 }
 
 export function getSuggestedGame(exclude?: GameId) {

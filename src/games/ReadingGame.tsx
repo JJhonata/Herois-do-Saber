@@ -4,6 +4,7 @@ import { shuffledCycleIndex, shuffle } from '../lib/questionFlow'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { recordAnswer } from '../lib/review'
+import GameHeader from '../components/GameHeader'
 
 const ITEMS=[
  {text:'Lia acordou cedo, colocou a mochila nas costas e foi para a escola com seu irmão.',q:'Para onde Lia foi?',a:'Para a escola',opts:['Para a escola','Para a praia','Para o mercado','Para o hospital']},
@@ -27,4 +28,39 @@ const ITEMS=[
  {text:'Depois da caminhada, a família descansou à sombra de uma árvore e bebeu água.',q:'Onde a família descansou?',a:'À sombra de uma árvore',opts:['À sombra de uma árvore','Dentro do ônibus','Na sala de aula','Perto do fogão']},
  {text:'A equipe combinou de dividir as tarefas: Joana pesquisaria, Caio faria os desenhos e Léo apresentaria o trabalho.',q:'Quem faria os desenhos?',a:'Caio',opts:['Caio','Joana','Léo','A professora']},
 ]
-export default function ReadingGame(){const [level,setLevel]=useGameState<Difficulty>(()=>getRecommendedDifficulty('reading'));const [i,setI]=useGameState(0);const [msg,setMsg]=useGameState('');const [score,setScore]=useGameState(0);const [resolved,setResolved]=useGameState(false);const deck=level==='easy'?[...ITEMS.slice(0,4),...ITEMS.slice(10,14)]:level==='medium'?[...ITEMS.slice(3,7),...ITEMS.slice(14,17)]:[...ITEMS.slice(6,10),...ITEMS.slice(17)];const item=deck[shuffledCycleIndex(deck.length,i,`reading:${level}`)];const opts=useMemo(()=>shuffle(item.opts),[i,level]);function choose(o:string){if(resolved)return;const correct=o===item.a;recordAnswer('reading',`${item.text} Pergunta: ${item.q}`,o,item.a,correct,'Volte ao texto e localize a frase que confirma a resposta.');if(correct){setResolved(true);addStars('reading',2);setScore(s=>s+1);playCorrect();setMsg('Você entendeu o texto! 📖');setTimeout(()=>{setI(x=>x+1);setMsg('');setResolved(false)},700)}else{playIncorrect();setMsg('Leia o texto novamente e procure a informação.')}}return <div className="container"><div className="game"><h2>Detetive da Leitura 🕵️📖</h2><p>Leia o texto e procure uma informação que confirme sua resposta.</p><div className="row difficulty-picker"><label htmlFor="reading-level">Nível:</label><select id="reading-level" value={level} onChange={event=>{setLevel(event.target.value as Difficulty);setI(0);setScore(0);setResolved(false);setMsg('')}}><option value="easy">Começando · textos curtos</option><option value="medium">Praticando · atenção aos detalhes</option><option value="hard">Desafio · textos mais longos</option></select></div><div className="reading-text">{item.text}</div><h3 style={{textAlign:'center'}}>{item.q}</h3><div className="choice-grid">{opts.map(o=><button key={o} disabled={resolved} onClick={()=>choose(o)}>{o}</button>)}</div><p className="game-message" aria-live="polite">Acertos: {score} · {msg}</p></div></div>}
+export default function ReadingGame() {
+	const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('reading'), 'level')
+	const [index, setIndex] = useGameState(0, 'index')
+	const [message, setMessage] = useGameState('', 'message')
+	const [score, setScore] = useGameState(0, 'score')
+	const [resolved, setResolved] = useGameState(false, 'resolved')
+	const deck = level === 'easy' ? [...ITEMS.slice(0, 4), ...ITEMS.slice(10, 14)] : level === 'medium' ? [...ITEMS.slice(3, 7), ...ITEMS.slice(14, 17)] : [...ITEMS.slice(6, 10), ...ITEMS.slice(17)]
+	const item = deck[shuffledCycleIndex(deck.length, index, `reading:${level}`)]
+	const options = useMemo(() => shuffle(item.opts), [index, level])
+
+	function choose(option: string) {
+		if (resolved) return
+		const correct = option === item.a
+		recordAnswer('reading', `${item.text} Pergunta: ${item.q}`, option, item.a, correct, 'Volte ao texto e localize a frase que confirma a resposta.')
+		if (correct) {
+			setResolved(true)
+			addStars('reading', 2)
+			setScore((value) => value + 1)
+			playCorrect()
+			setMessage('Você entendeu o texto! 📖')
+			setTimeout(() => { setIndex((value) => value + 1); setMessage(''); setResolved(false) }, 700)
+		} else {
+			playIncorrect()
+			setMessage('Leia o texto novamente e procure a informação.')
+		}
+	}
+
+	return <div className="container"><div className="game">
+		<GameHeader title="Detetive da Leitura 🕵️📖" description="Leia o texto e procure uma informação que confirme sua resposta." />
+		<div className="row difficulty-picker"><label htmlFor="reading-level">Nível:</label><select id="reading-level" value={level} onChange={(event) => { setLevel(event.target.value as Difficulty); setIndex(0); setScore(0); setResolved(false); setMessage('') }}><option value="easy">Começando · textos curtos</option><option value="medium">Praticando · atenção aos detalhes</option><option value="hard">Desafio · textos mais longos</option></select></div>
+		<div className="reading-text">{item.text}</div>
+		<h3 style={{ textAlign: 'center' }}>{item.q}</h3>
+		<div className="choice-grid">{options.map((option) => <button key={option} disabled={resolved} onClick={() => choose(option)}>{option}</button>)}</div>
+		<p className="game-message" aria-live="polite">Acertos: {score} · {message}</p>
+	</div></div>
+}

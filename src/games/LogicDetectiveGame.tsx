@@ -5,6 +5,7 @@ import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/prog
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
 import { recordAnswer } from '../lib/review'
+import GameHeader from '../components/GameHeader'
 
 type Puzzle = { title: string; emoji: string; clues: string[]; question: string; options: string[]; answer: string; explanation: string }
 const puzzles: Record<Difficulty, Puzzle[]> = {
@@ -47,10 +48,10 @@ const puzzles: Record<Difficulty, Puzzle[]> = {
 }
 
 export default function LogicDetectiveGame() {
-  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('logic'))
-  const [round, setRound] = useGameState(0)
-  const [picked, setPicked] = useGameState<string | null>(null)
-  const [message, setMessage] = useGameState('')
+  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('logic'), 'level')
+  const [round, setRound] = useGameState(0, 'round')
+  const [picked, setPicked] = useGameState<string | null>(null, 'picked')
+  const [message, setMessage] = useGameState('', 'message')
   const puzzleList = puzzles[level]
   const puzzleIndex = shuffledCycleIndex(puzzleList.length, round, `logic:${level}`)
   const puzzle = puzzleList[puzzleIndex]
@@ -80,8 +81,7 @@ export default function LogicDetectiveGame() {
   }
 
   return <div className="container"><div className="game logic-game">
-    <h2>Detetives da Lógica 🕵️</h2>
-    <p>Use as pistas para descobrir a resposta. Você pode tentar de novo.</p>
+    <GameHeader title="Detetives da Lógica 🕵️" description="Use as pistas para descobrir a resposta. Você pode tentar de novo." />
     <div className="row difficulty-picker"><label htmlFor="logic-level">Nível:</label><select id="logic-level" value={level} onChange={(event) => { setLevel(event.target.value as Difficulty); setRound(0); setPicked(null); setMessage('') }}><option value="easy">Começando · 2 possibilidades</option><option value="medium">Praticando · 3 pistas</option><option value="hard">Desafio · combinações e ordem</option></select></div>
     <section className="logic-case-heading"><span aria-hidden="true">{puzzle.emoji}</span><div><strong>{puzzle.title}</strong><small>Desafio {puzzleIndex + 1} de {puzzleList.length}</small></div></section>
     <div className="content-phase-track" role="progressbar" aria-label="Progresso dos desafios" aria-valuemin={0} aria-valuemax={puzzleList.length} aria-valuenow={puzzleIndex + (correct ? 1 : 0)}><span style={{ width: `${((puzzleIndex + (correct ? 1 : 0)) / puzzleList.length) * 100}%` }} /></div>

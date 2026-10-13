@@ -4,6 +4,9 @@ import { shuffle } from '../lib/questionFlow'
 import { playCorrect } from '../lib/sfx'
 import { addStars, getRecommendedDifficulty } from '../lib/progress'
 import { recordAnswer } from '../lib/review'
+import { getGameMistakeCount } from '../lib/review'
+import GameResult from '../components/GameResult'
+import GameHeader from '../components/GameHeader'
 
 type Card = { symbol: string, flipped: boolean, matched: boolean }
 type Theme = 'frutas' | 'animais' | 'emojis' | 'veiculos' | 'escola' | 'natureza'
@@ -25,21 +28,21 @@ const SIZES = [
 ]
 
 export default function MemoryGame() {
-  const [theme, setTheme] = useGameState<Theme>('frutas')
+  const [theme, setTheme] = useGameState<Theme>('frutas', 'theme')
   const [size, setSize] = useGameState(() => {
     const recommended = getRecommendedDifficulty('memory')
     return recommended === 'easy' ? SIZES[0] : recommended === 'medium' ? SIZES[1] : SIZES[2]
-  })
+  }, 'size')
 
   const pairs = useMemo(()=> (size.cols * size.rows) / 2, [size])
   const symbols = useMemo(()=> THEMES[theme].slice(0, pairs), [theme, pairs])
   const makeDeck = () => shuffle([...symbols, ...symbols]).map(s => ({ symbol: s, flipped:false, matched:false } as Card))
 
-  const [cards, setCards] = useGameState<Card[]>(makeDeck())
-  const [openIdxs, setOpenIdxs] = useGameState<number[]>([])
-  const [score, setScore] = useGameState(0)
-  const [matchedCount, setMatchedCount] = useGameState(0)
-  const [locked, setLocked] = useGameState(false)
+  const [cards, setCards] = useGameState<Card[]>(makeDeck(), 'cards')
+  const [openIdxs, setOpenIdxs] = useGameState<number[]>([], 'open-indices')
+  const [score, setScore] = useGameState(0, 'score')
+  const [matchedCount, setMatchedCount] = useGameState(0, 'matched-count')
+  const [locked, setLocked] = useGameState(false, 'locked')
   const initialized = useRef(false)
 
   useEffect(() => {
@@ -93,8 +96,8 @@ export default function MemoryGame() {
   return (
     <div className="container">
       <div className="game">
+        <GameHeader title="Memória 🧠" description="Encontre os pares, observe as posições e treine sua memória visual." />
         <div className="row memory-header">
-          <h2>Memória 🧠</h2>
           <div className="memory-settings">
             <div className="memory-setting"><label htmlFor="memory-theme">Tema:</label>
               <select id="memory-theme" value={theme} onChange={e=> setTheme(e.target.value as Theme)}>
@@ -113,23 +116,22 @@ export default function MemoryGame() {
             </div>
           </div>
         </div>
-        <p role="status" aria-live="polite">Pares encontrados: <strong>{score}</strong> / {pairs}</p>
-        <div className="flip-grid" style={{ gridTemplateColumns: `repeat(${size.cols}, minmax(0, 1fr))`, maxWidth: `${size.cols * 96 + (size.cols - 1) * 12}px` }}>
-          {cards.map((c,i)=> (
-            <button key={i} type="button" className="flip-card" onClick={()=>flip(i)} disabled={locked || c.matched} aria-pressed={c.flipped || c.matched} aria-label={`${c.flipped || c.matched ? c.symbol : 'Carta fechada'}, posição ${i + 1}${c.matched ? ', par encontrado' : ''}`}>
-                <div className={`flip-inner ${c.flipped || c.matched ? 'flipped' : ''}`}>
-                  <div className="flip-face flip-front" aria-hidden={c.flipped || c.matched}>❓</div>
-                  <div className="flip-face flip-back" aria-hidden={!c.flipped && !c.matched} style={{ fontSize: 28 }}>
-                    {c.flipped || c.matched ? c.symbol : null}
-                  </div>
-              </div>
-            </button>
-          ))}
-        </div>
-        <div className="row" style={{ marginTop: 12 }}>
-          <button className="secondary" onClick={restart}>Reiniciar</button>
-          <span role="status" aria-live="polite">{completed ? 'Parabéns! 🎉 Você encontrou todos os pares.' : ''}</span>
-        </div>
+        {completed ? <GameResult score={score} total={pairs} reviewCount={getGameMistakeCount('memory')} onRestart={restart} /> : <>
+          <p role="status" aria-live="polite">Pares encontrados: <strong>{score}</strong> / {pairs}</p>
+          <div className="flip-grid" style={{ gridTemplateColumns: `repeat(${size.cols}, minmax(0, 1fr))`, maxWidth: `${size.cols * 96 + (size.cols - 1) * 12}px` }}>
+            {cards.map((c,i)=> (
+              <button key={i} type="button" className="flip-card" onClick={()=>flip(i)} disabled={locked || c.matched} aria-pressed={c.flipped || c.matched} aria-label={`${c.flipped || c.matched ? c.symbol : 'Carta fechada'}, posição ${i + 1}${c.matched ? ', par encontrado' : ''}`}>
+                  <div className={`flip-inner ${c.flipped || c.matched ? 'flipped' : ''}`}>
+                    <div className="flip-face flip-front" aria-hidden={c.flipped || c.matched}>❓</div>
+                    <div className="flip-face flip-back" aria-hidden={!c.flipped && !c.matched} style={{ fontSize: 28 }}>
+                      {c.flipped || c.matched ? c.symbol : null}
+                    </div>
+                </div>
+              </button>
+            ))}
+          </div>
+          <div className="row" style={{ marginTop: 12 }}><button className="secondary" onClick={restart}>Reiniciar</button></div>
+        </>}
       </div>
     </div>
   )

@@ -5,6 +5,7 @@ import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/prog
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
 import { recordAnswer } from '../lib/review'
+import GameHeader from '../components/GameHeader'
 
 type Category = 'Animal' | 'Alimento' | 'Objeto' | 'Lugar'
 type Item = { name: string; emoji: string; category: Category }
@@ -54,10 +55,10 @@ const ITEMS: Item[] = [
 ]
 
 export default function CategoryGame() {
-  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('category'))
-  const [round, setRound] = useGameState(0)
-  const [score, setScore] = useGameState(0)
-  const [picked, setPicked] = useGameState<Category | null>(null)
+  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('category'), 'level')
+  const [round, setRound] = useGameState(0, 'round')
+  const [score, setScore] = useGameState(0, 'score')
+  const [picked, setPicked] = useGameState<Category | null>(null, 'picked')
   const item = useMemo(() => ITEMS[shuffledCycleIndex(ITEMS.length, round, 'category')], [round])
   const optionCount = level === 'easy' ? 2 : level === 'medium' ? 3 : CATEGORIES.length
   const options = useMemo(() => shuffle([item.category, ...shuffle(CATEGORIES.filter(category => category !== item.category)).slice(0, optionCount - 1)]), [round, level])
@@ -82,8 +83,7 @@ export default function CategoryGame() {
   return (
     <div className="container">
       <div className="game">
-        <h2>Qual é a Categoria? 📚</h2>
-        <p>Observe a palavra e escolha o grupo ao qual ela pertence.</p>
+        <GameHeader title="Qual é a Categoria? 📚" description="Observe a palavra e escolha o grupo ao qual ela pertence." />
         <div className="row difficulty-picker"><label htmlFor="category-level">Nível:</label><select id="category-level" value={level} disabled={picked === item.category} onChange={event => { setLevel(event.target.value as Difficulty); setRound(0); setPicked(null); setScore(0) }}><option value="easy">Começando · 2 opções</option><option value="medium">Praticando · 3 opções</option><option value="hard">Desafio · 4 opções</option></select></div>
         <div className="row" style={{ justifyContent: 'space-between' }}>
           <span>Rodada: <strong>{round + 1}</strong></span>

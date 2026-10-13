@@ -2,6 +2,9 @@ import { useGameState } from '../lib/gameSession'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { recordAnswer } from '../lib/review'
+import { getGameMistakeCount } from '../lib/review'
+import GameResult from '../components/GameResult'
+import GameHeader from '../components/GameHeader'
 
 type Q = { q: string, options: string[], correct: number }
 
@@ -30,12 +33,12 @@ const SAFETY_QUESTIONS: Q[] = [
 const PASS_THRESHOLD = Math.ceil(SAFETY_QUESTIONS.length * 0.7)
 
 export default function SecurityGame() {
-  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('security'))
-  const [i, setI] = useGameState(0)
-  const [chosen, setChosen] = useGameState<number | null>(null)
-  const [score, setScore] = useGameState(0)
-  const [finished, setFinished] = useGameState(false)
-  const [awardedMedal, setAwardedMedal] = useGameState(false)
+  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('security'), 'level')
+  const [i, setI] = useGameState(0, 'index')
+  const [chosen, setChosen] = useGameState<number | null>(null, 'chosen')
+  const [score, setScore] = useGameState(0, 'score')
+  const [finished, setFinished] = useGameState(false, 'finished')
+  const [awardedMedal, setAwardedMedal] = useGameState(false, 'awarded-medal')
   const q = SAFETY_QUESTIONS[i]
   const optionCount = level === 'easy' ? 2 : level === 'medium' ? 3 : 4
   const visibleOptions = q.options.map((text, index) => ({ text, index }))
@@ -78,7 +81,7 @@ export default function SecurityGame() {
   return (
     <div className="container">
       <div className="game">
-        <h2>Segurança Online 🔐</h2>
+        <GameHeader title="Segurança Online 🔐" description="Aprenda a proteger senhas, dados pessoais e sua segurança na internet." />
         <div className="row difficulty-picker"><label htmlFor="security-level">Nível:</label><select id="security-level" value={level} disabled={chosen === q.correct} onChange={event => { setLevel(event.target.value as Difficulty); setChosen(null) }}><option value="easy">Começando · 2 opções</option><option value="medium">Praticando · 3 opções</option><option value="hard">Desafio · 4 opções</option></select></div>
         {!finished ? (
           <>
@@ -100,7 +103,7 @@ export default function SecurityGame() {
           </>
         ) : (
           <>
-            <p><strong>Parabéns!</strong> Você concluiu o quiz com {score} ponto(s).</p>
+            <GameResult score={score} total={SAFETY_QUESTIONS.length} reviewCount={getGameMistakeCount('security')} onRestart={()=> { setI(0); setScore(0); setFinished(false); setChosen(null); setAwardedMedal(false) }} />
             {score >= PASS_THRESHOLD ? (
               <>
                 <p>Você passou! 🏅 (mínimo para passar: {PASS_THRESHOLD})</p>
@@ -115,9 +118,6 @@ export default function SecurityGame() {
             <ul>
               {TIPS.map((t, idx)=> <li key={idx}>{t}</li>)}
             </ul>
-            <div className="row">
-              <button className="accent" onClick={()=> { setI(0); setScore(0); setFinished(false); setChosen(null); setAwardedMedal(false) }}>Recomeçar</button>
-            </div>
           </>
         )}
       </div>

@@ -1,12 +1,14 @@
 // Efeitos sonoros simples com Web Audio API (beeps curtos)
 let ctx: AudioContext | null = null
+type AudioWindow = Window & typeof globalThis & { webkitAudioContext?: typeof AudioContext }
 let soundEnabled = (()=>{
   try { const v = localStorage.getItem('herois_sound'); return v ? v === '1' : true } catch { return true }
 })()
 
 function ensureCtx() {
   if (!ctx) {
-    const Ctor = (window as any).AudioContext || (window as any).webkitAudioContext
+    const audioWindow = window as AudioWindow
+    const Ctor = audioWindow.AudioContext || audioWindow.webkitAudioContext
     if (Ctor) ctx = new Ctor()
   }
   return ctx

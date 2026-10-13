@@ -1,0 +1,23 @@
+/* Navegacao */
+nav { position: sticky; top: 0; background: linear-gradient(90deg, var(--primary), #9d73ff); color: white; display: flex; align-items: center; gap: 12px; padding: 12px 16px; box-shadow: 0 2px 8px rgba(0,0,0,.08); z-index: 10; backdrop-filter: blur(4px); }
+nav a { text-decoration: none; color: white; font-weight: 600; padding: 8px 10px; border-radius: 8px; }
+nav a:hover { background: rgba(255,255,255,.15); }
+.home-link { background: rgba(255,255,255,.18); border: 2px solid rgba(255,255,255,.35); border-radius: 999px; padding: 8px 14px; box-shadow: 0 2px 0 rgba(0,0,0,.06); transition: background .2s ease, transform .2s ease, box-shadow .2s ease; }
+.home-link:hover { background: rgba(255,255,255,.28); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,.12), 0 0 14px rgba(255,255,255,.35); animation: glow-pulse 1.2s ease-in-out infinite; }
+.home-link:focus-visible { outline: 3px solid rgba(255,255,255,.65); outline-offset: 2px; }
+.nav-links { display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+.nav-links::-webkit-scrollbar { display: none; }
+
+html[data-contrast="true"], :root[data-contrast="true"] {
+  --bg: #ffffff;
+  --text: #000000;
+  --primary: #000000;
+  --secondary: #ffd166;
+  --accent: #00a896;
+}
+
+@media (max-width: 640px) {
+  nav { flex-wrap: wrap; gap: 8px; }
+  .nav-actions { order: 2; width: 100%; display: flex; justify-content: flex-end; }
+  .nav-links { order: 3; width: 100%; padding-bottom: 4px; }
+}

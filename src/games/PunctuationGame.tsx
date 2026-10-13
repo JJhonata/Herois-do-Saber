@@ -3,6 +3,7 @@ import { shuffledCycleIndex } from '../lib/questionFlow'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { recordAnswer } from '../lib/review'
+import GameHeader from '../components/GameHeader'
 
 type Task = { before: string; after: string; mark: string; hint: string; explanation: string }
 const tasks: Record<Difficulty, Task[]> = {
@@ -47,10 +48,10 @@ const tasks: Record<Difficulty, Task[]> = {
 function completedSentence(task: Task) { return `${task.before}${task.mark}${task.after}` }
 
 export default function PunctuationGame() {
-  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('punctuation'))
-  const [round, setRound] = useGameState(0)
-  const [chosen, setChosen] = useGameState<string | null>(null)
-  const [message, setMessage] = useGameState('')
+  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('punctuation'), 'level')
+  const [round, setRound] = useGameState(0, 'round')
+  const [chosen, setChosen] = useGameState<string | null>(null, 'chosen')
+  const [message, setMessage] = useGameState('', 'message')
   const taskList = tasks[level]
   const taskIndex = shuffledCycleIndex(taskList.length, round, `punctuation:${level}`)
   const task = taskList[taskIndex]
@@ -79,8 +80,7 @@ export default function PunctuationGame() {
   }
 
   return <div className="container"><div className="game punctuation-game">
-    <h2>Pontuação Express ✍️</h2>
-    <p>Leia a frase e escolha o sinal que está faltando.</p>
+    <GameHeader title="Pontuação Express ✍️" description="Leia a frase e escolha o sinal que está faltando." />
     <div className="row difficulty-picker"><label htmlFor="punctuation-level">Nível:</label><select id="punctuation-level" value={level} onChange={(event) => { setLevel(event.target.value as Difficulty); setRound(0); setChosen(null); setMessage('') }}><option value="easy">Começando · vírgula e ponto final</option><option value="medium">Praticando · perguntas e listas</option><option value="hard">Desafio · frases mais longas</option></select></div>
     <div className="punctuation-progress">Desafio {taskIndex + 1} de {taskList.length}</div>
     <div className="content-phase-track" role="progressbar" aria-label="Progresso dos desafios" aria-valuemin={0} aria-valuemax={taskList.length} aria-valuenow={taskIndex + (correct ? 1 : 0)}><span style={{ width: `${((taskIndex + (correct ? 1 : 0)) / taskList.length) * 100}%` }} /></div>

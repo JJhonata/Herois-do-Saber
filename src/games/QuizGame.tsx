@@ -4,6 +4,7 @@ import { shuffle } from '../lib/questionFlow'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { recordAnswer } from '../lib/review'
+import GameHeader from '../components/GameHeader'
 
 type Q = { q: string, options: string[], correct: number }
 type Category = 'geral' | 'ciencias' | 'portugues' | 'geografia'
@@ -100,18 +101,18 @@ const BANK: Record<Category, Q[]> = {
 }
 
 export default function QuizGame() {
-  const [category, setCategory] = useGameState<Category>('geral')
-  const [difficulty, setDifficulty] = useGameState<Difficulty>(() => getRecommendedDifficulty('quiz'))
+  const [category, setCategory] = useGameState<Category>('geral', 'category')
+  const [difficulty, setDifficulty] = useGameState<Difficulty>(() => getRecommendedDifficulty('quiz'), 'difficulty')
   const questions = useMemo(() => {
     const bank = BANK[category]
     const sectionSize = Math.ceil(bank.length / 3)
     const section = difficulty === 'easy' ? bank.slice(0, sectionSize) : difficulty === 'medium' ? bank.slice(sectionSize, sectionSize * 2) : bank.slice(sectionSize * 2)
     return shuffle(section.length ? section : bank)
   }, [category, difficulty])
-  const [i, setI] = useGameState(0)
-  const [chosen, setChosen] = useGameState<number | null>(null)
-  const [score, setScore] = useGameState(0)
-  const [feedback, setFeedback] = useGameState('')
+  const [i, setI] = useGameState(0, 'index')
+  const [chosen, setChosen] = useGameState<number | null>(null, 'chosen')
+  const [score, setScore] = useGameState(0, 'score')
+  const [feedback, setFeedback] = useGameState('', 'feedback')
   const advanceTimer = useRef<number | null>(null)
   const q = questions[i]
   useEffect(() => () => {
@@ -160,7 +161,7 @@ export default function QuizGame() {
   return (
     <div className="container">
       <div className="game">
-        <h2>Quiz ❓</h2>
+        <GameHeader title="Quiz ❓" description="Leia a pergunta, compare as opções e escolha a resposta mais adequada." />
         <div className="row" style={{ alignItems: 'center' }}>
           <label htmlFor="quiz-category">Categoria:</label>
           <select id="quiz-category" value={category} onChange={e=> restart(e.target.value as Category)}>

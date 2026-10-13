@@ -3,6 +3,7 @@ import { useGameState } from '../lib/gameSession'
 import { playCorrect } from '../lib/sfx'
 import { addStars } from '../lib/progress'
 import { recordAnswer } from '../lib/review'
+import GameHeader from '../components/GameHeader'
 import { shuffle } from '../lib/questionFlow'
 
 type Level = 'facil' | 'medio' | 'dificil'
@@ -75,17 +76,17 @@ const BANK: Record<Level, string[]> = {
 }
 
 export default function TypingSpeed() {
-  const [level, setLevel] = useGameState<Level>('facil')
+  const [level, setLevel] = useGameState<Level>('facil', 'level')
   const phrases = useMemo(()=> BANK[level], [level])
-  const [practice, setPractice] = useGameState(false)
-  const [custom, setCustom] = useGameState('Digite seu próprio texto aqui...')
-  const [text, setText] = useGameState('')
-  const [started, setStarted] = useGameState(false)
-  const [seconds, setSeconds] = useGameState(0)
+  const [practice, setPractice] = useGameState(false, 'practice')
+  const [custom, setCustom] = useGameState('Digite seu próprio texto aqui...', 'custom-text')
+  const [text, setText] = useGameState('', 'text')
+  const [started, setStarted] = useGameState(false, 'started')
+  const [seconds, setSeconds] = useGameState(0, 'seconds')
   const timerRef = useRef<number | null>(null)
   const initializedPhrases = useRef(false)
-  const [target, setTarget] = useGameState(phrases[0])
-  const [awarded, setAwarded] = useGameState(false)
+  const [target, setTarget] = useGameState(phrases[0], 'target')
+  const [awarded, setAwarded] = useGameState(false, 'awarded')
 
   useEffect(()=>{
     if (started) {
@@ -143,7 +144,7 @@ export default function TypingSpeed() {
   return (
     <div className="container">
       <div className="game">
-        <h2>Digitação ⌨️</h2>
+        <GameHeader title="Digitação ⌨️" description="Digite a frase com atenção aos espaços, acentos e pontuação." />
         <div className="row" style={{ alignItems: 'center' }}>
           <label htmlFor="typing-level">Nível:</label>
           <select id="typing-level" value={level} disabled={complete && !practice} onChange={e=> setLevel(e.target.value as Level)}>

@@ -5,6 +5,7 @@ import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/prog
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
 import { recordAnswer } from '../lib/review'
+import GameHeader from '../components/GameHeader'
 
 type Item = {
   word: string
@@ -36,10 +37,10 @@ const ITEMS: Item[] = [
 ]
 
 export default function SyllableGame() {
-  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('syllable'))
-  const [round, setRound] = useGameState(0)
-  const [score, setScore] = useGameState(0)
-  const [answered, setAnswered] = useGameState<string | null>(null)
+  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('syllable'), 'level')
+  const [round, setRound] = useGameState(0, 'round')
+  const [score, setScore] = useGameState(0, 'score')
+  const [answered, setAnswered] = useGameState<string | null>(null, 'answered')
   const deck = ITEMS.filter((candidate) => level === 'easy' ? candidate.parts.length <= 2 : level === 'medium' ? candidate.parts.length === 3 : candidate.parts.length >= 4)
   const item = deck[shuffledCycleIndex(deck.length, round, `syllable:${level}`)]
   const options = useMemo(() => shuffle(item.options), [round, level])
@@ -68,8 +69,7 @@ export default function SyllableGame() {
   return (
     <div className="container">
       <div className="game">
-        <h2>Sílaba Mágica ✨🔤</h2>
-        <p>Descubra qual sílaba está faltando para completar a palavra.</p>
+        <GameHeader title="Sílaba Mágica ✨🔤" description="Descubra qual sílaba está faltando para completar a palavra." />
         <div className="row difficulty-picker"><label htmlFor="syllable-level">Nível:</label><select id="syllable-level" value={level} disabled={answered === item.parts[item.missing]} onChange={event => { setLevel(event.target.value as Difficulty); setRound(0); setAnswered(null) }}><option value="easy">Começando · palavras curtas</option><option value="medium">Praticando · três sílabas</option><option value="hard">Desafio · palavras maiores</option></select></div>
         <div className="row" style={{ justifyContent: 'space-between' }}>
           <span>Rodada: <strong>{round + 1}</strong></span>

@@ -3,6 +3,7 @@ import { shuffledCycleIndex } from '../lib/questionFlow'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { recordAnswer } from '../lib/review'
+import GameHeader from '../components/GameHeader'
 
 const items = [
   { name: 'Lápis', emoji: '✏️', price: 3 }, { name: 'Caderno', emoji: '📒', price: 12 },
@@ -18,11 +19,11 @@ const items = [
 ]
 
 export default function MoneyGame() {
-  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('money'))
-  const [index, setIndex] = useGameState(0)
-  const [answer, setAnswer] = useGameState('')
-  const [message, setMessage] = useGameState('')
-  const [resolved, setResolved] = useGameState(false)
+  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('money'), 'level')
+  const [index, setIndex] = useGameState(0, 'index')
+  const [answer, setAnswer] = useGameState('', 'answer')
+  const [message, setMessage] = useGameState('', 'message')
+  const [resolved, setResolved] = useGameState(false, 'resolved')
   const deck = items.filter(({ price }) => level === 'easy' ? price <= 10 : level === 'medium' ? price <= 25 : true)
   const item = deck[shuffledCycleIndex(deck.length, index, `money:${level}`)]
   const payments = level === 'easy' ? [5] : level === 'medium' ? [5, 10] : [5, 10, 20]
@@ -47,7 +48,7 @@ export default function MoneyGame() {
   }
 
   return <div className="container"><div className="game">
-    <h2>Mercadinho do Saber 🛒💵</h2><p>Calcule quanto deve voltar de troco.</p>
+    <GameHeader title="Mercadinho do Saber 🛒💵" description="Calcule quanto deve voltar de troco." />
     <div className="row difficulty-picker"><label htmlFor="money-level">Nível:</label><select id="money-level" value={level} onChange={event => { setLevel(event.target.value as Difficulty); setIndex(0); setAnswer(''); setMessage(''); setResolved(false) }}><option value="easy">Começando · preços menores</option><option value="medium">Praticando · preços médios</option><option value="hard">Desafio · valores variados</option></select></div>
     <div className="shop-item"><span aria-hidden="true">{item.emoji}</span><strong>{item.name}</strong><b>Preço: R$ {item.price},00</b><small>Você pagou com R$ {paid},00</small></div>
     <div className="row" style={{ justifyContent: 'center' }}>

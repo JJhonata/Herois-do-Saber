@@ -4,6 +4,7 @@ import { shuffledCycleIndex, shuffle } from '../lib/questionFlow'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { recordAnswer } from '../lib/review'
+import GameHeader from '../components/GameHeader'
 
 type Word = { word: string; portuguese: string; emoji: string }
 const words: Record<Difficulty, Word[]> = {
@@ -41,9 +42,9 @@ function speak(word: string) {
 }
 
 export default function EnglishPocketGame() {
-  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('english'))
-  const [round, setRound] = useGameState(0)
-  const [picked, setPicked] = useGameState<string | null>(null)
+  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('english'), 'level')
+  const [round, setRound] = useGameState(0, 'round')
+  const [picked, setPicked] = useGameState<string | null>(null, 'picked')
   const [showHint, setShowHint] = useState(false)
   const [feedback, setFeedback] = useState('')
   const [voiceMessage, setVoiceMessage] = useState('')
@@ -83,8 +84,7 @@ export default function EnglishPocketGame() {
   }
 
   return <div className="container"><div className="game english-game">
-    <h2>Inglês de Bolso 🇬🇧</h2>
-    <p>Ouça a palavra em inglês e toque na figura correspondente.</p>
+    <GameHeader title="Inglês de Bolso 🇬🇧" description="Ouça a palavra em inglês e toque na figura correspondente." />
     <div className="row difficulty-picker"><label htmlFor="english-level">Nível:</label><select id="english-level" value={level} onChange={(event) => { setLevel(event.target.value as Difficulty); setRound(0); setPicked(null); setShowHint(false); setFeedback(''); setVoiceMessage('') }}><option value="easy">Começando · palavras conhecidas</option><option value="medium">Praticando · objetos e natureza</option><option value="hard">Desafio · novas palavras</option></select></div>
     <div className="english-prompt"><span aria-hidden="true">🎧</span><div><strong>Desafio {wordIndex + 1} de {wordList.length}</strong><p>Toque no botão para ouvir com calma.</p></div></div>
     <div className="content-phase-track" role="progressbar" aria-label="Progresso dos desafios" aria-valuemin={0} aria-valuemax={wordList.length} aria-valuenow={wordIndex + (correct ? 1 : 0)}><span style={{ width: `${((wordIndex + (correct ? 1 : 0)) / wordList.length) * 100}%` }} /></div>

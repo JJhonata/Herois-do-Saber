@@ -5,6 +5,7 @@ import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/prog
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
 import { recordAnswer } from '../lib/review'
+import GameHeader from '../components/GameHeader'
 
 type Fraction = { numerator: number; denominator: number }
 
@@ -17,10 +18,10 @@ const fractions: Record<Difficulty, Fraction[]> = {
 function formatFraction({ numerator, denominator }: Fraction) { return `${numerator}/${denominator}` }
 
 export default function FractionPizzaGame() {
-  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('fractions'))
-  const [round, setRound] = useGameState(0)
-  const [picked, setPicked] = useGameState<string | null>(null)
-  const [message, setMessage] = useGameState('')
+  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('fractions'), 'level')
+  const [round, setRound] = useGameState(0, 'round')
+  const [picked, setPicked] = useGameState<string | null>(null, 'picked')
+  const [message, setMessage] = useGameState('', 'message')
   const [wrongAnswer, setWrongAnswer] = useState(false)
   const fraction = fractions[level][shuffledCycleIndex(fractions[level].length, round, `fractions:${level}`)]
   const options = useMemo(() => {
@@ -59,8 +60,7 @@ export default function FractionPizzaGame() {
   }
 
   return <div className="container"><div className="game fraction-game">
-    <h2>Pizzaria das Frações 🍕</h2>
-    <p>Observe os pedaços iguais e escolha a fração que mostra a cobertura.</p>
+    <GameHeader title="Pizzaria das Frações 🍕" description="Observe os pedaços iguais e escolha a fração que mostra a cobertura." />
     <div className="row difficulty-picker"><label htmlFor="fractions-level">Nível:</label><select id="fractions-level" value={level} onChange={(event) => { setLevel(event.target.value as Difficulty); setRound(0); setPicked(null); setWrongAnswer(false); setMessage('') }}><option value="easy">Começando · partes simples</option><option value="medium">Praticando · novos denominadores</option><option value="hard">Desafio · pizzas divididas em mais partes</option></select></div>
     <section className="fraction-order" aria-label={`Pizza com ${fraction.numerator} de ${fraction.denominator} pedaços com cobertura`}>
       <span aria-hidden="true" className="fraction-chef">👩‍🍳</span>

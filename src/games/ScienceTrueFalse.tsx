@@ -5,6 +5,7 @@ import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/prog
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { shootConfetti } from '../lib/confetti'
 import { recordAnswer } from '../lib/review'
+import GameHeader from '../components/GameHeader'
 
 type Fact = { statement: string; answer: boolean; explanation: string; emoji: string }
 
@@ -43,10 +44,10 @@ const FACTS: Fact[] = [
 ]
 
 export default function ScienceTrueFalse() {
-  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('science'))
-  const [round, setRound] = useGameState(0)
-  const [score, setScore] = useGameState(0)
-  const [answer, setAnswer] = useGameState<boolean | null>(null)
+  const [level, setLevel] = useGameState<Difficulty>(() => getRecommendedDifficulty('science'), 'level')
+  const [round, setRound] = useGameState(0, 'round')
+  const [score, setScore] = useGameState(0, 'score')
+  const [answer, setAnswer] = useGameState<boolean | null>(null, 'answer')
   const deck = level === 'easy'
     ? [...FACTS.slice(0, 8), ...FACTS.slice(20, 24)]
     : level === 'medium'
@@ -77,7 +78,7 @@ export default function ScienceTrueFalse() {
   return (
     <div className="container">
       <div className="game">
-        <h2>Verdadeiro ou Falso: Ciências 🔬</h2>
+        <GameHeader title="Verdadeiro ou Falso: Ciências 🔬" description="Leia cada afirmação, observe as pistas e escolha verdadeiro ou falso." />
         <div className="row difficulty-picker"><label htmlFor="science-level">Nível:</label><select id="science-level" value={level} onChange={event => { setLevel(event.target.value as Difficulty); setRound(0); setScore(0); setAnswer(null) }}><option value="easy">Começando · fatos básicos</option><option value="medium">Praticando · observe os detalhes</option><option value="hard">Desafio · conceitos científicos</option></select></div>
         <div className="row" style={{ justifyContent: 'space-between' }}>
           <span>Pergunta: <strong>{round + 1}</strong></span>

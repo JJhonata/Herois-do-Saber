@@ -77,12 +77,20 @@ const books: Book[] = [
 ]
 
 const COMPLETED_KEY = 'herois_books_completed_v1'
+const READING_PROGRESS_KEY = 'herois_books_progress_v1'
 
 function readCompleted(): string[] {
   try {
     const saved: unknown = JSON.parse(localStorage.getItem(COMPLETED_KEY) || '[]')
     return Array.isArray(saved) ? saved.filter((slug): slug is string => typeof slug === 'string') : []
   } catch { return [] }
+}
+
+function readBookProgress(): Record<string, number> {
+  try {
+    const saved: unknown = JSON.parse(localStorage.getItem(READING_PROGRESS_KEY) || '{}')
+    return saved && typeof saved === 'object' && !Array.isArray(saved) ? Object.fromEntries(Object.entries(saved).filter(([, page]) => typeof page === 'number' && page >= 0)) : {}
+  } catch { return {} }
 }
 
 export default function BookLibrary() {
@@ -92,6 +100,7 @@ export default function BookLibrary() {
   const [level, setLevel] = useState('Todos')
   const [theme, setTheme] = useState('Todos')
   const [completed, setCompleted] = useState(readCompleted)
+  const [bookProgress, setBookProgress] = useState(readBookProgress)
   const [fontSize, setFontSize] = useState(20)
   const [page, setPage] = useState(0)
   const [turnDirection, setTurnDirection] = useState<'next' | 'previous'>('next')
@@ -104,6 +113,7 @@ export default function BookLibrary() {
   }), [query, level, theme])
 
   useEffect(() => () => { if ('speechSynthesis' in window) window.speechSynthesis.cancel() }, [])
+  useEffect(() => { setPage(slug ? bookProgress[slug] || 0 : 0); setFontSize(20) }, [slug])
 
   function markCompleted() {
     if (!book) return
@@ -117,6 +127,9 @@ export default function BookLibrary() {
     const boundedPage = Math.max(0, Math.min(book.paragraphs.length, nextPage))
     setTurnDirection(boundedPage >= page ? 'next' : 'previous')
     setPage(boundedPage)
+    const nextProgress = { ...bookProgress, [book.slug]: boundedPage }
+    setBookProgress(nextProgress)
+    try { localStorage.setItem(READING_PROGRESS_KEY, JSON.stringify(nextProgress)) } catch {}
   }
 
   function readAloud() {
@@ -205,7 +218,7 @@ export default function BookLibrary() {
         <div className="book-card-cover"><img src={`/book-art/${item.slug}.jpg`} alt="" loading="lazy" decoding="async" /><span className="book-level">{item.level}</span><span className="book-cover-corner" aria-hidden="true">{item.cover}</span></div>
         <span className="book-theme-label">{item.theme} · {item.age}</span>
         <h3>{item.title}</h3><p>{item.summary}</p>
-        <div className="book-card-bottom"><span>⏱ Cerca de 2 min</span>{completed.includes(item.slug) && <span className="book-read-badge">✓ Lido</span>}</div>
+        <div className="book-card-bottom"><span>⏱ Cerca de 2 min</span>{completed.includes(item.slug) ? <span className="book-read-badge">✓ Lido</span> : bookProgress[item.slug] > 0 && <span className="book-read-badge">Página {bookProgress[item.slug]}</span>}</div>
         <Link className="book-open-link" to={`/books/${item.slug}`}>{completed.includes(item.slug) ? 'Ler novamente' : 'Ler história'} <span aria-hidden="true">→</span></Link>
       </article>)}
     </section> : <section className="books-empty" role="status"><span aria-hidden="true">🔎</span><h2>Nenhuma história encontrada</h2><p>Tente outra busca ou ajuste os filtros.</p><button type="button" className="books-primary-link" onClick={() => { setQuery(''); setLevel('Todos'); setTheme('Todos') }}>Limpar filtros</button></section>}

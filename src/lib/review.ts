@@ -32,6 +32,10 @@ export function getGameReviewCount(game: GameId) {
   return typeof total === 'number' ? total : 0
 }
 
+export function getGameMistakeCount(game: GameId) {
+  return getGameReview(game).filter(({ correct }) => !correct).length
+}
+
 export function getGameRoundReview(game: GameId, round: number): AnswerReview[] {
   const stored = read()[game]
   if (!stored || round < 1) return []

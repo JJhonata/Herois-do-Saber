@@ -11,8 +11,8 @@ export default function Navbar() {
   const [preferences, setPreferences] = useState<AccessibilityPreferences>(readAccessibilityPreferences)
   useEffect(()=>{
     const fn = () => setStars(getTotalStars())
-    window.addEventListener('progress:update', fn as any)
-    return ()=> window.removeEventListener('progress:update', fn as any)
+    window.addEventListener('progress:update', fn)
+    return ()=> window.removeEventListener('progress:update', fn)
   }, [])
   useEffect(() => { applyAccessibilityPreferences(preferences) }, [preferences])
 
@@ -21,8 +21,8 @@ export default function Navbar() {
   }
   useEffect(()=>{
     const onSound = () => setSound(isSoundEnabled())
-    window.addEventListener('sound:update', onSound as any)
-    return ()=> window.removeEventListener('sound:update', onSound as any)
+    window.addEventListener('sound:update', onSound)
+    return ()=> window.removeEventListener('sound:update', onSound)
   }, [])
   return (
     <nav>

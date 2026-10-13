@@ -3,6 +3,7 @@ import { useGameState } from '../lib/gameSession'
 import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/progress'
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { recordAnswer } from '../lib/review'
+import GameHeader from '../components/GameHeader'
 
 const WORDS = ['ESCOLA', 'LIVRO', 'AMIGO', 'CASA', 'GATO', 'BOLA', 'FLOR', 'SOL']
 const DESKTOP_GRID_SIZE = 12
@@ -61,14 +62,14 @@ function makePuzzle(gridSize: number, difficulty: Difficulty): Puzzle {
 }
 
 export default function WordSearchGame() {
-  const [difficulty, setDifficulty] = useGameState<Difficulty>(() => getRecommendedDifficulty('wordsearch'))
-  const [gridSize, setGridSize] = useGameState(getGridSize)
-  const [puzzle, setPuzzle] = useGameState(() => makePuzzle(getGridSize(), getRecommendedDifficulty('wordsearch')))
-  const [foundWords, setFoundWords] = useGameState<string[]>([])
-  const [foundCells, setFoundCells] = useGameState<number[]>([])
-  const [targetIndex, setTargetIndex] = useGameState(0)
-  const [selection, setSelection] = useGameState<number[]>([])
-  const [message, setMessage] = useGameState('')
+  const [difficulty, setDifficulty] = useGameState<Difficulty>(() => getRecommendedDifficulty('wordsearch'), 'difficulty')
+  const [gridSize, setGridSize] = useGameState(getGridSize, 'grid-size')
+  const [puzzle, setPuzzle] = useGameState(() => makePuzzle(getGridSize(), getRecommendedDifficulty('wordsearch')), 'puzzle')
+  const [foundWords, setFoundWords] = useGameState<string[]>([], 'found-words')
+  const [foundCells, setFoundCells] = useGameState<number[]>([], 'found-cells')
+  const [targetIndex, setTargetIndex] = useGameState(0, 'target-index')
+  const [selection, setSelection] = useGameState<number[]>([], 'selection')
+  const [message, setMessage] = useGameState('', 'message')
   const pointerSelecting = useRef(false)
   const lastPointerAt = useRef(0)
   const initialized = useRef(false)
@@ -168,8 +169,7 @@ export default function WordSearchGame() {
   }
 
   return <div className="container"><div className="game">
-    <h2>Caça-Palavras 🔎🔤</h2>
-    <p>{complete ? 'Você encontrou todas as palavras!' : <>Encontre <strong>{target}</strong>. Toque nas letras em sequência ou arraste o dedo pela palavra.</>}</p>
+    <GameHeader title="Caça-Palavras 🔎🔤" description={complete ? 'Você encontrou todas as palavras!' : `Encontre ${target}. Toque nas letras em sequência ou arraste o dedo pela palavra.`} />
     <div className="row difficulty-picker"><label htmlFor="wordsearch-level">Nível:</label><select id="wordsearch-level" value={difficulty} onChange={event => setDifficulty(event.target.value as Difficulty)}><option value="easy">Começando · 4 palavras</option><option value="medium">Praticando · 6 palavras</option><option value="hard">Desafio · 8 palavras</option></select></div>
     <div className={`word-search-grid${gridSize === MOBILE_GRID_SIZE ? ' mobile-grid' : ''}`} role="group" aria-label="Grade do caça-palavras" onPointerUp={() => { pointerSelecting.current = false }} onPointerCancel={() => { pointerSelecting.current = false }}>
       {puzzle.grid.flat().map((letter, index) => {

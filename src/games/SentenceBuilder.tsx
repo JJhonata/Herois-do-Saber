@@ -5,6 +5,7 @@ import { addStars, getRecommendedDifficulty, type Difficulty } from '../lib/prog
 import { playCorrect, playIncorrect } from '../lib/sfx'
 import { recordAnswer } from '../lib/review'
 import { shootConfetti } from '../lib/confetti'
+import GameHeader from '../components/GameHeader'
 
 const ITEMS = [
   'O gato dorme no sofá',
@@ -26,7 +27,7 @@ const ITEMS = [
 ]
 
 export default function SentenceBuilder(){
-  const [level,setLevel]=useGameState<Difficulty>(()=>getRecommendedDifficulty('sentence')); const [round,setRound]=useGameState(0); const [picked,setPicked]=useGameState<string[]>([]); const [msg,setMsg]=useGameState(''); const [solved,setSolved]=useGameState(false)
+  const [level,setLevel]=useGameState<Difficulty>(()=>getRecommendedDifficulty('sentence'),'level'); const [round,setRound]=useGameState(0,'round'); const [picked,setPicked]=useGameState<string[]>([],'picked'); const [msg,setMsg]=useGameState('','message'); const [solved,setSolved]=useGameState(false,'solved')
   const deck=ITEMS.filter(sentence=>level==='easy'?sentence.split(' ').length<=5:level==='medium'?sentence.split(' ').length===6:sentence.split(' ').length>=7)
   const sentence=deck[shuffledCycleIndex(deck.length,round,`sentence:${level}`)]
   const words=useMemo(()=>shuffle(sentence.split(' ')),[round,level])
@@ -43,7 +44,7 @@ export default function SentenceBuilder(){
     if(correct){ setSolved(true); addStars('sentence',2); playCorrect(); shootConfetti(); setMsg('Perfeito! Você montou a frase! 🎉'); setTimeout(()=>{setRound(r=>r+1);setPicked([]);setMsg('');setSolved(false)},900) }
     else { playIncorrect(); setMsg('Ainda não. Observe a ordem das palavras e tente novamente.') }
   }
-  return <div className="container"><div className="game"><h2>Construtor de Frases 🧱📝</h2><p>Toque nas palavras na ordem correta para formar uma frase.</p>
+  return <div className="container"><div className="game"><GameHeader title="Construtor de Frases 🧱📝" description="Toque nas palavras na ordem correta para formar uma frase." />
     <div className="row difficulty-picker"><label htmlFor="sentence-level">Nível:</label><select id="sentence-level" value={level} onChange={event=>{setLevel(event.target.value as Difficulty);setRound(0);setPicked([]);setSolved(false);setMsg('')}}><option value="easy">Começando · frases curtas</option><option value="medium">Praticando · frases médias</option><option value="hard">Desafio · frases longas</option></select></div>
     <div className="sentence-target">{built || 'Monte a frase aqui...'}</div>
     <div className="word-bank">{available.map((w)=> <button key={`${w}-${words.indexOf(w)}`} className="secondary" onClick={()=>choose(w)} disabled={solved}>{w}</button>)}</div>
